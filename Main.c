@@ -73,7 +73,7 @@ ADCIntHandler(void)
 }
 
 //*****************************************************************************
-// Initialisation functions for the clock (incl. SysTick), ADC, display
+// Initialisation functions for the clock (incl. SysTick), ADC, Display
 //*****************************************************************************
 void
 initClock (void)
@@ -164,10 +164,12 @@ int32_t CalcAv(void)
 
 int32_t CalcPerc(int32_t Average)
 {
+    // Must invert Analog Value and scale to a percentage of its range
+
     int16_t ANALOG_MIN = 860;
     int16_t ANALOG_MAX = 1075;
     int16_t ANALOG_RANGE = ANALOG_MAX - ANALOG_MIN;
-    int32_t percent = floor(((Average - ALTITUDE_BASE) * -100) / ANALOG_RANGE);
+    int32_t percent = floor(((Average - ALTITUDE_BASE) * 100 * -1) / ANALOG_RANGE);
     return percent;
 }
 
@@ -202,7 +204,7 @@ void displayUpdate (int32_t Altitude, int32_t Perc, uint8_t displayPage)
     }
     else if(displayPage == 2)
     {
-        usnprintf (line1, sizeof(line1), "       %2d      " , ALTITUDE_BASE);
+        usnprintf (line1, sizeof(line1), "       %2d      " , ALTITUDE_BASE); //Change to display nothing for final
         usnprintf (line2, sizeof(line2), "                ");
     }
 
@@ -212,6 +214,8 @@ void displayUpdate (int32_t Altitude, int32_t Perc, uint8_t displayPage)
 
 void main(void)
 {
+    // Main Function for the First Helicopter Project Milestone
+    // Utilities Clocks, ADC, OLED, Buttons and Circular Buffer Interrupts
 
     initClock ();
     initADC();
@@ -256,10 +260,7 @@ void main(void)
             initAltitude();
         }
 
-
-
         displayUpdate(altitude, percentage, displayPage);
-
 
         SysCtlDelay (SysCtlClockGet () / 150);  // Approx 50 Hz polling
     }
