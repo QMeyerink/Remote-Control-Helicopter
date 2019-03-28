@@ -1,5 +1,5 @@
 //*****************************************************************************
-// testing pull
+//
 // Main.c - Main program for helicopter milestone 1 project
 //
 //Takes analog sensor value from Helicopter rig and
@@ -73,7 +73,7 @@ ADCIntHandler(void)
 }
 
 //*****************************************************************************
-// Initialisation functions for the clock (incl. SysTick), ADC, Display
+// Initialisation functions for the clock (incl. SysTick), ADC, display
 //*****************************************************************************
 void
 initClock (void)
@@ -164,12 +164,10 @@ int32_t CalcAv(void)
 
 int32_t CalcPerc(int32_t Average)
 {
-    // Must invert Analog Value and scale to a percentage of its range
-
-    int16_t ANALOG_MIN = 860;
-    int16_t ANALOG_MAX = 1075;
+    int16_t ANALOG_MIN = 910;
+    int16_t ANALOG_MAX = 2370;
     int16_t ANALOG_RANGE = ANALOG_MAX - ANALOG_MIN;
-    int32_t percent = floor(((Average - ALTITUDE_BASE) * 100 * -1) / ANALOG_RANGE);
+    int32_t percent = floor(((Average - ALTITUDE_BASE) * -100) / ANALOG_RANGE);
     return percent;
 }
 
@@ -189,22 +187,19 @@ void displayUpdate (int32_t Altitude, int32_t Perc, uint8_t displayPage)
     char line1[17]; // Display fits 16 characters wide.
     char line2[17];
 
-    OLEDStringDraw ("                ", 0, 0);
-    OLEDStringDraw ("                ", 0, 1);//Clear current screen
-
     if(displayPage == 0)
     {
         usnprintf (line1, sizeof(line1), "Altitude percent");
-        usnprintf (line2, sizeof(line2), "      %3d%%    ", Perc);
+        usnprintf (line2, sizeof(line2), "      %3d%%      ", Perc);
     }
     else if(displayPage == 1)
     {
         usnprintf (line1, sizeof(line1), "Mean Altitude");
-        usnprintf (line2, sizeof(line2), "      %2d    ", Altitude);
+        usnprintf (line2, sizeof(line2), "      %2d        ", Altitude);
     }
     else if(displayPage == 2)
     {
-        usnprintf (line1, sizeof(line1), "       %2d      " , ALTITUDE_BASE); //Change to display nothing for final
+        usnprintf (line1, sizeof(line1), "                  " , ALTITUDE_BASE);
         usnprintf (line2, sizeof(line2), "                ");
     }
 
@@ -214,8 +209,6 @@ void displayUpdate (int32_t Altitude, int32_t Perc, uint8_t displayPage)
 
 void main(void)
 {
-    // Main Function for the First Helicopter Project Milestone
-    // Utilities Clocks, ADC, OLED, Buttons and Circular Buffer Interrupts
 
     initClock ();
     initADC();
@@ -228,10 +221,13 @@ void main(void)
     int8_t displayPage;
     int32_t altitude;
     int32_t percentage;
+    int8_t display_tick;
 
     SysCtlDelay (SysCtlClockGet ());
 
     displayPage = 0;
+    display_tick = 0;
+
 
     initAltitude();
 
@@ -260,8 +256,14 @@ void main(void)
             initAltitude();
         }
 
-        displayUpdate(altitude, percentage, displayPage);
 
-        SysCtlDelay (SysCtlClockGet () / 150);  // Approx 50 Hz polling
+        if (display_tick > 10 )
+        {
+        displayUpdate(altitude, percentage, displayPage);
+        display_tick = 0;
+        } else {
+        display_tick++;
+        }
+        //SysCtlDelay (SysCtlClockGet () / 200);
     }
 }
