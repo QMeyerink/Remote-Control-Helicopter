@@ -9,7 +9,7 @@
 #define SAMPLE_RATE_HZ 100
 
 
-extern int32_t ALTITUDE_BASE;
+extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
 
 

@@ -19,6 +19,7 @@
 #include "Interrupts.h"
 
 extern circBuf_t g_inBuffer;
+extern int32_t altitude_base;
 
 #define BUF_SIZE 25
 #define SAMPLE_RATE_HZ 100
@@ -33,6 +34,9 @@ void
 initDisplay (void);
 
 void initAltitude(void);
+
+void
+intYawA (void);
 
 void
 initSystem(void);

@@ -22,7 +22,7 @@
 #define BUF_SIZE 25
 #define SAMPLE_RATE_HZ 100
 
-extern int32_t ALTITUDE_BASE;
+extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;
 
 void
@@ -60,6 +60,7 @@ initADC (void)
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(ADC0_BASE, 3);
 }
+
 void
 initClock (void)
 {
@@ -91,9 +92,41 @@ void initAltitude(void)
 {
     //Calibrates the current mean ADC reading to be the Base Altitude
 
-    ALTITUDE_BASE = CalcAv();
+    altitude_base = CalcAv();
 
 }
+
+void
+initYawA (void)
+{
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+
+        // Set up the specific port pin as medium strength current & pull-down config.
+        // Refer to TivaWare peripheral lib user manual for set up for configuration options
+        GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+
+        // Set data direction register as output
+        GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_DIR_MODE_IN);
+
+        GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandler);
+
+        GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0);
+
+        // Enable GPIO Port F
+            SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF); //Set up for the green_LED (Used for testing only)
+
+            // Set up the specific port pin as medium strength current & pull-down config.
+            // Refer to TivaWare peripheral lib user manual for set up for configuration options
+            GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+
+            // Set data direction register as output
+            GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_DIR_MODE_OUT);
+
+            // Write a zero to the output pin 3 on port F
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00);
+
+}
+
 
 void
 initSystem(void)
@@ -102,5 +135,6 @@ initSystem(void)
     initADC();
     initDisplay();
     initButtons();
+    initYawA();
     initCircBuf(&g_inBuffer, BUF_SIZE);
 }

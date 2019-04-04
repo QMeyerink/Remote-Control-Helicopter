@@ -6,7 +6,7 @@
 // displays as a scaled value to the Orbit OLED display
 //
 // Author:  Quinlan Meyerink, Tyler Noah
-// Last modified:   20.3.2019
+// Last modified:   5.4.2019
 //
 
 #include <stdint.h>
@@ -33,12 +33,14 @@
 
 #define BUF_SIZE 25
 #define SAMPLE_RATE_HZ 100
+#define MAX_DISPLAY_TICKS 10
 
 
-int32_t ALTITUDE_BASE;
+
+
+int32_t altitude_base;
 circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
 uint32_t g_ulSampCnt;    // Counter for the interrupts
-
 
 
 
@@ -62,7 +64,7 @@ void displayUpdate (int32_t Altitude, int32_t Perc, uint8_t displayPage)
     }
     else if(displayPage == 2)
     {
-        usnprintf (line1, sizeof(line1), "                  " , ALTITUDE_BASE);
+        usnprintf (line1, sizeof(line1), "                  " , altitude_base);
         usnprintf (line2, sizeof(line2), "                ");
     }
 
@@ -77,12 +79,12 @@ void main(void)
 
     IntMasterEnable();
 
-    int8_t displayPage;
     int32_t altitude;
     int32_t percentage;
     int8_t display_tick;
+    int8_t display_page;
 
-    displayPage = 0;
+    display_page = 0;
     display_tick = 0;
 
     SysCtlDelay (SysCtlClockGet ());
@@ -98,14 +100,14 @@ void main(void)
 
         if (checkButton (UP) == PUSHED)
         {
-            if(displayPage >= 2)
+            if(display_page >= 2)
             {
-                displayPage = 0;
+                display_page = 0;
             }
 
             else
             {
-                displayPage++;
+                display_page++;
             }
         }
 
@@ -115,9 +117,9 @@ void main(void)
         }
 
 
-        if (display_tick > 10 )
+        if (display_tick > MAX_DISPLAY_TICKS )
         {
-        displayUpdate(altitude, percentage, displayPage);
+        displayUpdate(altitude, percentage, display_page);
         display_tick = 0;
         } else {
         display_tick++;

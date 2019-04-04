@@ -9,10 +9,9 @@
 #define SAMPLE_RATE_HZ 100
 
 
-extern int32_t ALTITUDE_BASE;
+extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
-extern int16_t ANALOG_MIN = 910;
-extern int16_t ANALOG_MAX = 2370; // need to change from hard code to 0.8v higher than BASE
+
 
 int32_t CalcAv(void)
 {
@@ -37,6 +36,6 @@ int32_t CalcPerc(int32_t Average)
     int16_t ANALOG_MIN = 910;  // Shouldnt exist
     int16_t ANALOG_MAX = 2370; // need to change from hard code to 0.8v higher than BASE
     int16_t ANALOG_RANGE = ANALOG_MAX - ANALOG_MIN;
-    int32_t percent = floor(((Average - ALTITUDE_BASE) * -100) / ANALOG_RANGE);
+    int32_t percent = floor(((Average - altitude_base) * -100) / ANALOG_RANGE);
     return percent;
 }
