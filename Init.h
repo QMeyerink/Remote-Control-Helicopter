@@ -39,5 +39,8 @@ void
 intYawA (void);
 
 void
+intYawB (void);
+
+void
 initSystem(void);
 

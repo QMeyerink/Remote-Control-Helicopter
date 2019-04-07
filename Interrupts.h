@@ -29,4 +29,7 @@ void
 ADCIntHandler(void);
 
 void
-yawIntHandler (void);
+yawIntHandlerA (void);
+
+void
+yawIntHandlerB (void);

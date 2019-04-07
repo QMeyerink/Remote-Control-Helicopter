@@ -103,12 +103,12 @@ initYawA (void)
 
         // Set up the specific port pin as medium strength current & pull-down config.
         // Refer to TivaWare peripheral lib user manual for set up for configuration options
-        GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+        //GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
 
         // Set data direction register as output
         GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_DIR_MODE_IN);
 
-        GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandler);
+        GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandlerA);
 
         GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0);
 
@@ -127,6 +127,23 @@ initYawA (void)
 
 }
 
+void
+initYawB (void)
+{
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+
+        // Set up the specific port pin as medium strength current & pull-down config.
+        // Refer to TivaWare peripheral lib user manual for set up for configuration options
+        //GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+
+        // Set data direction register as output
+        GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_DIR_MODE_IN);
+
+        GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandlerB);
+
+        GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_1);
+}
+
 
 void
 initSystem(void)
@@ -136,5 +153,6 @@ initSystem(void)
     initDisplay();
     initButtons();
     initYawA();
+    initYawB();
     initCircBuf(&g_inBuffer, BUF_SIZE);
 }

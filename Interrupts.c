@@ -5,12 +5,16 @@
 #include "inc/hw_types.h"
 #include "inc/hw_ints.h"
 #include "driverlib/adc.h"
+#include "driverlib/pwm.h"
+#include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
 #include "driverlib/interrupt.h"
-#include "driverlib/gpio.h"
+#include "driverlib/debug.h"
+#include "utils/ustdlib.h"
 #include "circBufT.h"
-
+#include "OrbitOLED/OrbitOLEDInterface.h"
+#include "buttons4.h"
 
 
 extern circBuf_t g_inBuffer;
@@ -50,7 +54,7 @@ ADCIntHandler(void)
 }
 
 void
-yawIntHandler (void)
+yawIntHandlerA (void)
 {
     uint32_t pinState;
 
@@ -59,8 +63,32 @@ yawIntHandler (void)
     if (pinState)  //Using green LED for testing (Will remove once interrupt function correctly)
     {
     GPIOPinWrite(GPIO_PORTF_BASE,  GPIO_PIN_3, GPIO_PIN_3);
+
     } else {
+
     GPIOPinWrite(GPIO_PORTF_BASE,  GPIO_PIN_3, 0x00);
+
+    }
+
+
+   GPIOIntClear(GPIO_PORTB_BASE, GPIO_INT_PIN_0);
+}
+
+void
+yawIntHandlerB (void)
+{
+    uint32_t pinState;
+
+    pinState = GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1);
+
+    if (pinState)  //Using green LED for testing (Will remove once interrupt function correctly)
+    {
+    GPIOPinWrite(GPIO_PORTF_BASE,  GPIO_PIN_3, GPIO_PIN_3);
+
+    } else {
+
+    GPIOPinWrite(GPIO_PORTF_BASE,  GPIO_PIN_3, 0x00);
+
     }
 
 
