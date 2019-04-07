@@ -92,7 +92,7 @@ yawIntHandlerB (void)
     }
 
 
-   GPIOIntClear(GPIO_PORTB_BASE, GPIO_INT_PIN_0);
+   GPIOIntClear(GPIO_PORTB_BASE, GPIO_INT_PIN_1);
 }
 
 
