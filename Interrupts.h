@@ -15,8 +15,6 @@
 #include "circBufT.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 #include "buttons4.h"
-#include "math.h"
-#include "Calcs.h"
 
 extern circBuf_t g_inBuffer;
 extern uint32_t g_ulSampCnt;
@@ -29,7 +27,6 @@ void
 ADCIntHandler(void);
 
 void
-yawIntHandlerA (void);
+yawIntHandler (void);
 
-void
-yawIntHandlerB (void);
+

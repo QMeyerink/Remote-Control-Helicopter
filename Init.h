@@ -17,6 +17,7 @@
 #include "buttons4.h"
 #include "math.h"
 #include "Interrupts.h"
+#include "Calcs.h"
 
 extern circBuf_t g_inBuffer;
 extern int32_t altitude_base;
@@ -35,11 +36,12 @@ initDisplay (void);
 
 void initAltitude(void);
 
+
 void
 intYawA (void);
 
 void
-intYawB (void);
+intYawB(void);
 
 void
 initSystem(void);
