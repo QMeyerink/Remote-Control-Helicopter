@@ -41,6 +41,8 @@
 int32_t altitude_base;
 circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
 uint32_t g_ulSampCnt;    // Counter for the interrupts
+uint8_t direction;
+
 
 
 

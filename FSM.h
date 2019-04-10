@@ -1,3 +1,13 @@
+/*
+ * FSM.h
+ *
+ *  Created on: 10/04/2019
+ *      Author: Quinlan Meyerink
+ */
+
+#ifndef FSM_H_
+#define FSM_H_
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"
@@ -12,24 +22,20 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
-#include "circBufT.h"
-#include "OrbitOLED/OrbitOLEDInterface.h"
-#include "buttons4.h"
-#include "FSM.h"
 
-extern circBuf_t g_inBuffer;
-extern uint32_t g_ulSampCnt;
-extern state_t previous_state;
+enum state {
+    state_one = 1,
+    state_two = 2,
+    state_three = 3,
+    state_four = 4
 
-
-
-void
-SysTickIntHandler(void);
-
-void
-ADCIntHandler(void);
-
-void
-yawIntHandler (void);
+}current_state;
 
 
+typedef enum state state_t;
+
+
+state_t state_calculator(uint32_t sensorA, uint32_t sensorB);
+
+
+#endif /* FSM_H_ */

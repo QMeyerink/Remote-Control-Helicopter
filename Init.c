@@ -18,12 +18,15 @@
 #include "math.h"
 #include "Interrupts.h"
 #include "Calcs.h"
+#include "FSM.h"
 
 #define BUF_SIZE 25
 #define SAMPLE_RATE_HZ 100
 
 extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;
+state_t previous_state;
+
 
 void
 initADC (void)
@@ -100,54 +103,59 @@ void initAltitude(void)
 void
 initYaw (void)
 {
+    uint32_t pin_state_A, pin_state_B;
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
 
-        GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD); // This code doesnt make sense but program fails without it.
-        GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD); // This code doesnt make sense but program fails without it.
+        GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_0|GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD); // This code doesnt make sense but program fails without it.
 
         // Set data direction register as output
-        GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_DIR_MODE_IN);
-        GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_DIR_MODE_IN);
+        GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_0|GPIO_PIN_1, GPIO_DIR_MODE_IN);
 
-        // Set the int handler for this pin (Does the in handler have to be the same for all pins in this port?)
+        // Set the int handler for this pin
         GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandler);
 
-        GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_INT_PIN_0, GPIO_BOTH_EDGES);
-        GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_INT_PIN_1, GPIO_BOTH_EDGES);
+        GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1, GPIO_BOTH_EDGES);
 
         //Enable this interrupt
-        GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0);
-        GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_1);
+        GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1);
 
+        pin_state_A = GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_0);
+        pin_state_B = GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1);
 
-
-        //Set up for the green and red LED (Used for testing only)
-        // Enable GPIO Port F
-            SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-
-            // Set up the specific port pin as medium strength current & pull-down config.
-            // Refer to TivaWare peripheral lib user manual for set up for configuration options
-            GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
-
-            // Set data direction register as output
-            GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_DIR_MODE_OUT);
-
-            // Write a zero to the output pin 3 on port F
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00);
-
-            // Set up the specific port pin as medium strength current & pull-down config.
-            // Refer to TivaWare peripheral lib user manual for set up for configuration options
-            GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
-
-            // Set data direction register as output
-            GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_DIR_MODE_OUT);
-
-            // Write a zero to the output pin 1 on port F
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0x00);
-
+        previous_state = state_calculator(pin_state_A, pin_state_B);
 }
 
+
+
+
+void initLEDs(void) //TESTING FUNCTION ONLY
+{
+    //Set up for the green and red LED (Used for testing only)
+    // Enable GPIO Port F
+        SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+
+        // Set up the specific port pin as medium strength current & pull-down config.
+        // Refer to TivaWare peripheral lib user manual for set up for configuration options
+        GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+
+        // Set data direction register as output
+        GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_DIR_MODE_OUT);
+
+        // Write a zero to the output pin 3 on port F
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00);
+
+        // Set up the specific port pin as medium strength current & pull-down config.
+        // Refer to TivaWare peripheral lib user manual for set up for configuration options
+        GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+
+        // Set data direction register as output
+        GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_DIR_MODE_OUT);
+
+        // Write a zero to the output pin 1 on port F
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0x00);
+
+}
 
 void
 initSystem(void)
@@ -157,5 +165,6 @@ initSystem(void)
     initDisplay();
     initButtons();
     initYaw();
+    initLEDs(); //TESTING FUNCTION ONLY
     initCircBuf(&g_inBuffer, BUF_SIZE);
 }

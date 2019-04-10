@@ -18,12 +18,14 @@
 #include "math.h"
 #include "Interrupts.h"
 #include "Calcs.h"
-
-extern circBuf_t g_inBuffer;
-extern int32_t altitude_base;
+#include "FSM.h"
 
 #define BUF_SIZE 25
 #define SAMPLE_RATE_HZ 100
+
+extern int32_t altitude_base;
+extern circBuf_t g_inBuffer;
+extern state_t previous_state;
 
 void
 initADC (void);
@@ -36,12 +38,8 @@ initDisplay (void);
 
 void initAltitude(void);
 
-
 void
-intYawA (void);
-
-void
-intYawB(void);
+intYaw (void);
 
 void
 initSystem(void);
