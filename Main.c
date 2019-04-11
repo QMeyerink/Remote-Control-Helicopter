@@ -6,7 +6,7 @@
 // displays as a scaled value to the Orbit OLED display
 //
 // Author:  Quinlan Meyerink, Tyler Noah
-// Last modified:   5.4.2019
+// Last modified:   11.4.2019
 //
 
 #include <stdint.h>
@@ -31,24 +31,29 @@
 #include "Init.h"
 #include "Calcs.h"
 
-#define BUF_SIZE 25
-#define SAMPLE_RATE_HZ 100
-#define MAX_DISPLAY_TICKS 10
+#define BUF_SIZE 25             // Size of circular buffer
+#define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
+#define MAX_DISPLAY_TICKS 10    // Number of loops between OLED update.
 
 
+int32_t altitude_base;         //Initial altitude value
+circBuf_t g_inBuffer;          // Buffer of size BUF_SIZE integers (sample values)
+uint32_t g_ulSampCnt;          // Counter for the interrupts
 
 
-int32_t altitude_base;
-circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
-uint32_t g_ulSampCnt;    // Counter for the interrupts
-uint8_t direction;
+enum pages {
 
+    perc_page,
+    raw_page,
+    yaw_page
 
+};
 
+typedef enum pages pages_t;
 
-void displayUpdate (int32_t Altitude, int32_t Perc, uint8_t displayPage)
+void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t distance)
 {
-    // Displays on the OLED, the altitude data (raw or percentage scaled)
+    // Displays on the OLED, the altitude data (raw or percentage scaled) and the yaw distance
     // depending on which page has been selected
 
     char line1[17]; // Display fits 16 characters wide.
@@ -61,71 +66,79 @@ void displayUpdate (int32_t Altitude, int32_t Perc, uint8_t displayPage)
     }
     else if(displayPage == 1)
     {
-        usnprintf (line1, sizeof(line1), "Mean Altitude");
+        usnprintf (line1, sizeof(line1), "Mean Altitude    ");
         usnprintf (line2, sizeof(line2), "      %2d        ", Altitude);
     }
     else if(displayPage == 2)
     {
-        usnprintf (line1, sizeof(line1), "                  " , altitude_base);
-        usnprintf (line2, sizeof(line2), "                ");
+        usnprintf (line1, sizeof(line1), "Yaw in degrees       " );
+        usnprintf (line2, sizeof(line2), "          %2d      ", distance);
     }
 
+    //Draw specified strings.
     OLEDStringDraw (line1, 0, 0);
     OLEDStringDraw (line2, 0, 1);
 }
 
 void main(void)
 {
-
+    //Run all initiate functions.
     initSystem();
 
+    //Enable system wide interrupts
     IntMasterEnable();
 
+    //Declare all local variables
     int32_t altitude;
     int32_t percentage;
     int8_t display_tick;
-    int8_t display_page;
+    pages_t display_page;
+    int32_t distance;
 
-    display_page = 0;
+    display_page = perc_page;
     display_tick = 0;
 
+    //Full clock delay so as to fill buffer before taking initial reading.
     SysCtlDelay (SysCtlClockGet ());
 
+    //Set initial altitude value
     initAltitude();
+
 
     while(1)
     {
+        //Refresh buttons
         updateButtons();
 
-        altitude = CalcAv();
-        percentage = CalcPerc(altitude);
+        //Check for button presses and update OLED or base altitude as needed
+        if (checkButton(UP) == PUSHED) {
+            if(display_page == yaw_page) {
 
-        if (checkButton (UP) == PUSHED)
-        {
-            if(display_page >= 2)
-            {
-                display_page = 0;
-            }
+                display_page = perc_page;
 
-            else
-            {
+            } else {
                 display_page++;
             }
         }
 
-        if (checkButton (LEFT) == PUSHED)
-        {
+        if (checkButton(LEFT) == PUSHED) {
+
             initAltitude();
         }
 
+        //Calculate new values to be displayed
+        altitude = CalcAv();
+        percentage = CalcPerc(altitude);
+        distance = tick_to_deg();
 
-        if (display_tick > MAX_DISPLAY_TICKS )
-        {
-        displayUpdate(altitude, percentage, display_page);
-        display_tick = 0;
+
+        //Update display on every 10th main loop
+        if (display_tick > MAX_DISPLAY_TICKS ) {
+            displayUpdate(altitude, percentage, display_page, distance);
+            display_tick = 0;
+
         } else {
-        display_tick++;
+            display_tick++;
         }
-        //SysCtlDelay (SysCtlClockGet () / 200);
     }
 }

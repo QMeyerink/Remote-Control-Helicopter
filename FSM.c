@@ -19,42 +19,99 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 
-enum state {
-    state_one = 1,
-    state_two = 2,
-    state_three = 3,
-    state_four = 4
 
-}current_state;
+enum state {
+    state_zero,
+    state_one,
+    state_two,
+    state_three
+
+};
 
 typedef enum state state_t;
 
+state_t previous_state;
+extern int32_t distance;
 
-state_t state_calculator(uint32_t sensorA, uint32_t sensorB)
+
+void direction_calculator(bool sensorA, bool sensorB)
 {
-    state_t current_state;
+    if((distance == 448)||(distance == -448)) {
+        distance = 0;
+    }
 
-    switch(sensorA) {
+
+    switch(previous_state) {
         case 0 :
-            switch(sensorB) {
-                case 0 :
-                    current_state = state_one;
-                    break;
-                case 1 :
-                    current_state = state_two;
-                    break;
+            if(sensorA) {
+                previous_state = state_three;
+                distance -= 1;
+                break;
+
+            } else {
+                previous_state = state_one;
+                distance += 1;
+                break;
             }
-            break;
 
         case 1 :
-            switch(sensorB) {
-                case 0 :
-                    current_state = state_four;
-                    break;
-                case 1 :
-                    current_state = state_three;
-                    break;
-      }
+            if(sensorA) {
+                previous_state = state_two;
+                distance += 1;
+                break;
+
+            } else {
+                previous_state = state_zero;
+                distance -= 1;
+                break;
+            }
+
+        case 2 :
+            if(sensorA) {
+                previous_state = state_three;
+                distance += 1;
+                break;
+
+            } else {
+                previous_state = state_one;
+                distance -= 1;
+                break;
+            }
+
+        case 3 :
+            if(sensorA) {
+                previous_state = state_two;
+                distance -= 1;
+                break;
+
+            } else {
+                previous_state = state_zero;
+                distance += 1;
+                break;
+            }
     }
-    return current_state;
+
+}
+
+void init_state(bool sensorA, bool sensorB)
+{
+    state_t return_state;
+    distance = 0;
+
+    if(sensorA) {
+        if(sensorB) {
+            return_state = state_two;
+
+        } else {
+            return_state = state_three;
+        }
+    } else {
+        if(sensorB) {
+            return_state = state_one;
+
+        } else {
+            return_state = state_zero;
+        }
+    }
+    previous_state = return_state;
 }

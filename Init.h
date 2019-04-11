@@ -25,7 +25,6 @@
 
 extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;
-extern state_t previous_state;
 
 void
 initADC (void);

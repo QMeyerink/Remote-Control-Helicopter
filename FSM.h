@@ -24,18 +24,20 @@
 #include "utils/ustdlib.h"
 
 enum state {
-    state_one = 1,
-    state_two = 2,
-    state_three = 3,
-    state_four = 4
+    state_one,
+    state_two,
+    state_three,
+    state_four
 
-}current_state;
+};
 
 
 typedef enum state state_t;
 
 
-state_t state_calculator(uint32_t sensorA, uint32_t sensorB);
+uint8_t direction_calculator(bool sensorA, bool sensorB);
+
+void init_state(bool sensorA, bool sensorB);
 
 
 #endif /* FSM_H_ */

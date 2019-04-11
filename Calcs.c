@@ -11,6 +11,7 @@
 
 extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
+int32_t distance;
 
 
 int32_t CalcAv(void)
@@ -38,4 +39,10 @@ int32_t CalcPerc(int32_t Average)
     int16_t ANALOG_RANGE = ANALOG_MAX - ANALOG_MIN;
     int32_t percent = floor(((Average - altitude_base) * -100) / ANALOG_RANGE);
     return percent;
+}
+
+int32_t tick_to_deg(void)
+{
+
+    return(distance*0.8036);
 }

@@ -25,7 +25,6 @@
 
 extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;
-state_t previous_state;
 
 
 void
@@ -103,7 +102,7 @@ void initAltitude(void)
 void
 initYaw (void)
 {
-    uint32_t pin_state_A, pin_state_B;
+    bool pin_state_A, pin_state_B;
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
 
@@ -120,10 +119,10 @@ initYaw (void)
         //Enable this interrupt
         GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1);
 
-        pin_state_A = GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_0);
-        pin_state_B = GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1);
+        pin_state_A = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_0) == GPIO_INT_PIN_0);
+        pin_state_B = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1) == GPIO_INT_PIN_1);
 
-        previous_state = state_calculator(pin_state_A, pin_state_B);
+        init_state(pin_state_A, pin_state_B);
 }
 
 

@@ -19,7 +19,6 @@
 
 extern circBuf_t g_inBuffer;
 extern uint32_t g_ulSampCnt;
-extern state_t previous_state;
 
 
 
