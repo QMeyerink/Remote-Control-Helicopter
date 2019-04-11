@@ -1,3 +1,14 @@
+/*
+ * Interrupts.h
+ *
+ *  Created on: 4/04/2019
+ *      Author: Quinlan Meyerink, Tyler Noah
+ */
+
+#ifndef Interrupts_H_
+#define Interrupts_H_
+
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"
@@ -31,4 +42,4 @@ ADCIntHandler(void);
 void
 yawIntHandler (void);
 
-
+#endif /*Interrupts_h*/

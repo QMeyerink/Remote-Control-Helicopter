@@ -2,7 +2,7 @@
  * FSM.h
  *
  *  Created on: 10/04/2019
- *      Author: Quinlan Meyerink
+ *      Author: Quinlan Meyerink, Tyler Noah
  */
 
 #ifndef FSM_H_

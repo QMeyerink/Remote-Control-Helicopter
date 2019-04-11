@@ -1,3 +1,14 @@
+/*
+ * Init.h
+ *
+ *  Created on: 4/04/2019
+ *      Author: Quinlan Meyerink, Tyler Noah
+ */
+
+
+#ifndef Init_H_
+#define Init_H_
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"
@@ -35,7 +46,8 @@ initClock (void);
 void
 initDisplay (void);
 
-void initAltitude(void);
+void
+initAltitude(void);
 
 void
 intYaw (void);
@@ -43,3 +55,4 @@ intYaw (void);
 void
 initSystem(void);
 
+#endif /*Init_h*/

@@ -29,6 +29,7 @@ enum state {
 };
 
 typedef enum state state_t;
+#define NUM_OF_PINS 448
 
 state_t previous_state;
 extern int32_t distance;
@@ -36,11 +37,14 @@ extern int32_t distance;
 
 void direction_calculator(bool sensorA, bool sensorB)
 {
-    if((distance == 448)||(distance == -448)) {
+    //If a full rotation has been completed set back to distance count back to 0
+    if((distance == NUM_OF_PINS)||(distance == -NUM_OF_PINS)) {
         distance = 0;
     }
 
-
+    //Takes previous state and moves to next state
+    //depending on current sensor values
+    //Also incriments the distance value
     switch(previous_state) {
         case 0 :
             if(sensorA) {
@@ -93,6 +97,7 @@ void direction_calculator(bool sensorA, bool sensorB)
 
 }
 
+//Selects start up state from the sensor input
 void init_state(bool sensorA, bool sensorB)
 {
     state_t return_state;

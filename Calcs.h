@@ -1,3 +1,15 @@
+/*
+ * Calcs.h
+ *
+ *
+ *  Created on: 4/04/2019
+ *      Author: Quinlan Meyerink, Tyler Noah
+ */
+
+
+#ifndef Calcs_H_
+#define Calcs_H_
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"
@@ -20,3 +32,6 @@ int32_t CalcAv(void);
 int32_t CalcPerc(int32_t Average);
 
 int32_t tick_to_deg(void);
+
+
+#endif /*Calcs_H_*/

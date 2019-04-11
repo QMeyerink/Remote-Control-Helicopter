@@ -125,37 +125,6 @@ initYaw (void)
         init_state(pin_state_A, pin_state_B);
 }
 
-
-
-
-void initLEDs(void) //TESTING FUNCTION ONLY
-{
-    //Set up for the green and red LED (Used for testing only)
-    // Enable GPIO Port F
-        SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-
-        // Set up the specific port pin as medium strength current & pull-down config.
-        // Refer to TivaWare peripheral lib user manual for set up for configuration options
-        GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
-
-        // Set data direction register as output
-        GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_DIR_MODE_OUT);
-
-        // Write a zero to the output pin 3 on port F
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00);
-
-        // Set up the specific port pin as medium strength current & pull-down config.
-        // Refer to TivaWare peripheral lib user manual for set up for configuration options
-        GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
-
-        // Set data direction register as output
-        GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_DIR_MODE_OUT);
-
-        // Write a zero to the output pin 1 on port F
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0x00);
-
-}
-
 void
 initSystem(void)
 {
@@ -164,6 +133,5 @@ initSystem(void)
     initDisplay();
     initButtons();
     initYaw();
-    initLEDs(); //TESTING FUNCTION ONLY
     initCircBuf(&g_inBuffer, BUF_SIZE);
 }

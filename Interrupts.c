@@ -57,26 +57,29 @@ ADCIntHandler(void)
     // Place it in the circular buffer (advancing write index)
     writeCircBuf (&g_inBuffer, ulValue);
 
-    //Renable interrupts
+    //Re-enable interrupts
     IntMasterEnable();
 }
 
 void
 yawIntHandler (void)
 {
-
+    //Disable interrupts during interrupt
     IntMasterDisable();
 
+    //Clear the interrupt
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1);
 
     bool pin_state_A, pin_state_B;
 
+    //Gives a high or low pin states
     pin_state_A = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_0) == GPIO_INT_PIN_0);
     pin_state_B = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1) == GPIO_INT_PIN_1);
 
+    //Updates the global distance value.
     direction_calculator(pin_state_A, pin_state_B);
 
-
+    //Re-enable interrupts
     IntMasterEnable();
 }
 

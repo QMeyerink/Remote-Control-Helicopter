@@ -40,7 +40,7 @@ int32_t altitude_base;         //Initial altitude value
 circBuf_t g_inBuffer;          // Buffer of size BUF_SIZE integers (sample values)
 uint32_t g_ulSampCnt;          // Counter for the interrupts
 
-
+//Enum data type for the OLED 'page' scrolling system.
 enum pages {
 
     perc_page,
@@ -50,6 +50,8 @@ enum pages {
 };
 
 typedef enum pages pages_t;
+
+
 
 void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t distance)
 {
@@ -95,6 +97,7 @@ void main(void)
     pages_t display_page;
     int32_t distance;
 
+    //Set initial values for local variables
     display_page = perc_page;
     display_tick = 0;
 
