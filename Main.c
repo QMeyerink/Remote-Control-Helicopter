@@ -1,12 +1,12 @@
 //*****************************************************************************
-// testing pull
+//
 // Main.c - Main program for helicopter milestone 1 project
 //
 //Takes analog sensor value from Helicopter rig and
 // displays as a scaled value to the Orbit OLED display
 //
 // Author:  Quinlan Meyerink, Tyler Noah
-// Last modified:   20.3.2019
+// Last modified:   11.4.2019
 //
 
 #include <stdint.h>
@@ -27,241 +27,121 @@
 #include "OrbitOLED/OrbitOLEDInterface.h"
 #include "buttons4.h"
 #include "math.h"
+#include "Interrupts.h"
+#include "Init.h"
+#include "Calcs.h"
 
-#define BUF_SIZE 25
-#define SAMPLE_RATE_HZ 100
+#define BUF_SIZE 25             // Size of circular buffer
+#define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
+#define MAX_DISPLAY_TICKS 10    // Number of loops between OLED update.
 
 
-static int32_t ALTITUDE_BASE;
-static circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
-static uint32_t g_ulSampCnt;    // Counter for the interrupts
+int32_t altitude_base;         //Initial altitude value
+circBuf_t g_inBuffer;          // Buffer of size BUF_SIZE integers (sample values)
+uint32_t g_ulSampCnt;          // Counter for the interrupts
+
+//Enum data type for the OLED 'page' scrolling system.
+enum pages {
+
+    perc_page,
+    raw_page,
+    yaw_page
+
+};
+
+typedef enum pages pages_t;
 
 
-// *******************************************************
 
-void
-SysTickIntHandler(void)
+void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t distance)
 {
-    //
-    // Initiate a conversion
-    //
-    ADCProcessorTrigger(ADC0_BASE, 3);
-    g_ulSampCnt++;
-}
-
-//*****************************************************************************
-//
-// The handler for the ADC conversion complete interrupt.
-// Writes to the circular buffer.
-//
-//*****************************************************************************
-void
-ADCIntHandler(void)
-{
-    uint32_t ulValue;
-
-    //
-    // Get the single sample from ADC0.  ADC_BASE is defined in
-    // inc/hw_memmap.h
-    ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
-    //
-    // Place it in the circular buffer (advancing write index)
-    writeCircBuf (&g_inBuffer, ulValue);
-    //
-    // Clean up, clearing the interrupt
-    ADCIntClear(ADC0_BASE, 3);
-}
-
-//*****************************************************************************
-// Initialisation functions for the clock (incl. SysTick), ADC, Display
-//*****************************************************************************
-void
-initClock (void)
-{
-    // Set the clock rate to 20 MHz
-    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
-                   SYSCTL_XTAL_16MHZ);
-    //
-    // Set up the period for the SysTick timer.  The SysTick timer period is
-    // set as a function of the system clock.
-    SysTickPeriodSet(SysCtlClockGet() / SAMPLE_RATE_HZ);
-    //
-    // Register the interrupt handler
-    SysTickIntRegister(SysTickIntHandler);
-    //
-    // Enable interrupt and device
-    SysTickIntEnable();
-    SysTickEnable();
-}
-
-void
-initADC (void)
-{
-    // The ADC0 peripheral must be enabled for configuration and use.
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
-
-    // Enable sample sequence 3 with a processor signal trigger.  Sequence 3
-    // will do a single sample when the processor sends a signal to start the
-    // conversion.
-    ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
-
-    //
-    // Configure step 0 on sequence 3.  Sample channel 0 (ADC_CTL_CH0) in
-    // single-ended mode (default) and configure the interrupt flag
-    // (ADC_CTL_IE) to be set when the sample is done.  Tell the ADC logic
-    // that this is the last conversion on sequence 3 (ADC_CTL_END).  Sequence
-    // 3 has only one programmable step.  Sequence 1 and 2 have 4 steps, and
-    // sequence 0 has 8 programmable steps.  Since we are only doing a single
-    // conversion using sequence 3 we will only configure step 0.  For more
-    // on the ADC sequences and steps, refer to the LM3S1968 datasheet.
-    ADCSequenceStepConfigure(ADC0_BASE, 3, 0, ADC_CTL_CH9 | ADC_CTL_IE |
-                             ADC_CTL_END);
-
-    //
-    // Since sample sequence 3 is now configured, it must be enabled.
-    ADCSequenceEnable(ADC0_BASE, 3);
-
-    //
-    // Register the interrupt handler
-    ADCIntRegister (ADC0_BASE, 3, ADCIntHandler);
-
-    //
-    // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
-    ADCIntEnable(ADC0_BASE, 3);
-}
-
-void
-initDisplay (void)
-{
-  // Intialise the Orbit OLED display
-    OLEDInitialise ();
-}
-
-
-//*****************************************************************************
-//
-// Function to display the mean interval in usec
-//
-//*****************************************************************************
-
-int32_t CalcAv(void)
-{
-    // Calculates the Average ADC value by reading
-    // a circular buffer that is filled in interrupts
-
-    int8_t i;
-    int32_t sum;
-    int32_t result;
-
-    i = 0;
-    sum = 0;
-    for(i = 0; i < BUF_SIZE; i++)
-        sum = sum + readCircBuf (&g_inBuffer);
-    result = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
-
-    return result;
-}
-
-int32_t CalcPerc(int32_t Average)
-{
-    // Must invert Analog Value and scale to a percentage of its range
-
-    int16_t ANALOG_MIN = 860;
-    int16_t ANALOG_MAX = 1075;
-    int16_t ANALOG_RANGE = ANALOG_MAX - ANALOG_MIN;
-    int32_t percent = floor(((Average - ALTITUDE_BASE) * 100 * -1) / ANALOG_RANGE);
-    return percent;
-}
-
-void initAltitude(void)
-{
-    //Calibrates the current mean ADC reading to be the Base Altitude
-
-    ALTITUDE_BASE = CalcAv();
-
-}
-
-void displayUpdate (int32_t Altitude, int32_t Perc, uint8_t displayPage)
-{
-    // Displays on the OLED, the altitude data (raw or percentage scaled)
+    // Displays on the OLED, the altitude data (raw or percentage scaled) and the yaw distance
     // depending on which page has been selected
 
     char line1[17]; // Display fits 16 characters wide.
     char line2[17];
 
-    OLEDStringDraw ("                ", 0, 0);
-    OLEDStringDraw ("                ", 0, 1);//Clear current screen
-
     if(displayPage == 0)
     {
         usnprintf (line1, sizeof(line1), "Altitude percent");
-        usnprintf (line2, sizeof(line2), "      %3d%%    ", Perc);
+        usnprintf (line2, sizeof(line2), "      %3d%%      ", Perc);
     }
     else if(displayPage == 1)
     {
-        usnprintf (line1, sizeof(line1), "Mean Altitude");
-        usnprintf (line2, sizeof(line2), "      %2d    ", Altitude);
+        usnprintf (line1, sizeof(line1), "Mean Altitude    ");
+        usnprintf (line2, sizeof(line2), "      %2d        ", Altitude);
     }
     else if(displayPage == 2)
     {
-        usnprintf (line1, sizeof(line1), "               "); //Change to display nothing for final
-        usnprintf (line2, sizeof(line2), "                ");
+        usnprintf (line1, sizeof(line1), "Yaw in degrees       " );
+        usnprintf (line2, sizeof(line2), "          %2d      ", distance);
     }
 
+    //Draw specified strings.
     OLEDStringDraw (line1, 0, 0);
     OLEDStringDraw (line2, 0, 1);
 }
 
 void main(void)
 {
-    // Main Function for the First Helicopter Project Milestone
-    // Utilities Clocks, ADC, OLED, Buttons and Circular Buffer Interrupts
+    //Run all initiate functions.
+    initSystem();
 
-    initClock ();
-    initADC();
-    initDisplay ();
-    initButtons ();
-    initCircBuf (&g_inBuffer, BUF_SIZE);
-
+    //Enable system wide interrupts
     IntMasterEnable();
 
-    int8_t displayPage;
+    //Declare all local variables
     int32_t altitude;
     int32_t percentage;
+    int8_t display_tick;
+    pages_t display_page;
+    int32_t distance;
 
+    //Set initial values for local variables
+    display_page = perc_page;
+    display_tick = 0;
+
+    //Full clock delay so as to fill buffer before taking initial reading.
     SysCtlDelay (SysCtlClockGet ());
 
-    displayPage = 0;
-
+    //Set initial altitude value
     initAltitude();
+
 
     while(1)
     {
+        //Refresh buttons
         updateButtons();
 
-        altitude = CalcAv();
-        percentage = CalcPerc(altitude);
+        //Check for button presses and update OLED or base altitude as needed
+        if (checkButton(UP) == PUSHED) {
+            if(display_page == yaw_page) {
 
-        if (checkButton (UP) == PUSHED)
-        {
-            if(displayPage >= 2)
-            {
-                displayPage = 0;
-            }
+                display_page = perc_page;
 
-            else
-            {
-                displayPage++;
+            } else {
+                display_page++;
             }
         }
 
-        if (checkButton (LEFT) == PUSHED)
-        {
+        if (checkButton(LEFT) == PUSHED) {
+
             initAltitude();
         }
 
-        displayUpdate(altitude, percentage, displayPage);
+        //Calculate new values to be displayed
+        altitude = CalcAv();
+        percentage = CalcPerc(altitude);
+        distance = tick_to_deg();
 
-        SysCtlDelay (SysCtlClockGet () / 150);  // Approx 50 Hz polling
+
+        //Update display on every 10th main loop
+        if (display_tick > MAX_DISPLAY_TICKS ) {
+            displayUpdate(altitude, percentage, display_page, distance);
+            display_tick = 0;
+
+        } else {
+            display_tick++;
+        }
     }
 }
