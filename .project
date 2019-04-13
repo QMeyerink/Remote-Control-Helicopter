@@ -24,11 +24,4 @@
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>OrbitOLED</name>
-			<type>2</type>
-			<location>P:/Second_Pro_2019/Embedded_Systems_ENCE361/Laboratory source code/Week-3/Week3Lab/OrbitOLED</location>
-		</link>
-	</linkedResources>
 </projectDescription>

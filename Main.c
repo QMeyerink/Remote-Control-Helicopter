@@ -204,7 +204,7 @@ void displayUpdate (int32_t Altitude, int32_t Perc, uint8_t displayPage)
     }
     else if(displayPage == 2)
     {
-        usnprintf (line1, sizeof(line1), "       %2d      " , ALTITUDE_BASE); //Change to display nothing for final
+        usnprintf (line1, sizeof(line1), "               "); //Change to display nothing for final
         usnprintf (line2, sizeof(line2), "                ");
     }
 
