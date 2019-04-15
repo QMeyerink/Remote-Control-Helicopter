@@ -35,18 +35,21 @@ state_t previous_state;
 extern int32_t distance;
 
 
-void direction_calculator(bool sensorA, bool sensorB)
+void direction_calculator(bool sensorA)
+//De/Increments the distance value
+//to reflect state change
+//Takes previous state and moves to next state
+//depending on which sensor changed
+//Transitions are gray coded i.e only
+//one sensor changes value (A)
 {
     //If a full rotation has been completed set back to distance count back to 0
     if((distance == NUM_OF_PINS)||(distance == -NUM_OF_PINS)) {
         distance = 0;
     }
 
-    //Takes previous state and moves to next state
-    //depending on current sensor values
-    //Also incriments the distance value
     switch(previous_state) {
-        case 0 :
+        case 0 : // A=0, B=0
             if(sensorA) {
                 previous_state = state_three;
                 distance -= 1;
@@ -58,7 +61,7 @@ void direction_calculator(bool sensorA, bool sensorB)
                 break;
             }
 
-        case 1 :
+        case 1 : // A=0, B=1
             if(sensorA) {
                 previous_state = state_two;
                 distance += 1;
@@ -70,7 +73,7 @@ void direction_calculator(bool sensorA, bool sensorB)
                 break;
             }
 
-        case 2 :
+        case 2 : // A=1, B=1
             if(sensorA) {
                 previous_state = state_three;
                 distance += 1;
@@ -82,7 +85,7 @@ void direction_calculator(bool sensorA, bool sensorB)
                 break;
             }
 
-        case 3 :
+        case 3 : // A=1, B=0
             if(sensorA) {
                 previous_state = state_two;
                 distance -= 1;
@@ -97,25 +100,27 @@ void direction_calculator(bool sensorA, bool sensorB)
 
 }
 
-//Selects start up state from the sensor input
+
 void init_state(bool sensorA, bool sensorB)
+//Selects start up state from the sensor input
 {
     state_t return_state;
     distance = 0;
 
+    //States are gray-coded to allow simple transitions
     if(sensorA) {
         if(sensorB) {
-            return_state = state_two;
+            return_state = state_two; // A=1, B=1
 
         } else {
-            return_state = state_three;
+            return_state = state_three; // A=1, B=0
         }
     } else {
         if(sensorB) {
-            return_state = state_one;
+            return_state = state_one; // A=0, B=1
 
         } else {
-            return_state = state_zero;
+            return_state = state_zero; // A=0, B=0
         }
     }
     previous_state = return_state;

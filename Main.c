@@ -1,12 +1,13 @@
 //*****************************************************************************
 //
-// Main.c - Main program for helicopter milestone 1 project
+// Main.c - Main program for helicopter milestone 2 project
 //
-//Takes analog sensor value from Helicopter rig and
-// displays as a scaled value to the Orbit OLED display
+//Takes analog sensor value from helicopter rig and
+// yaw sensor values and displays to OLED
+// the percentage altitude and yaw angle
 //
-// Author:  Quinlan Meyerink, Tyler Noah
-// Last modified:   11.4.2019
+// Authors:  Quinlan Meyerink & Tyler Noah
+// Last modified:   15.4.2019
 //
 
 #include <stdint.h>
@@ -101,7 +102,7 @@ void main(void)
     display_page = perc_page;
     display_tick = 0;
 
-    //Full clock delay so as to fill buffer before taking initial reading.
+    //Full clock delay allows sensor to fill buffer
     SysCtlDelay (SysCtlClockGet ());
 
     //Set initial altitude value
@@ -110,13 +111,14 @@ void main(void)
 
     while(1)
     {
-        //Refresh buttons
+        //Refresh button states
         updateButtons();
 
-        //Check for button presses and update OLED or base altitude as needed
         if (checkButton(UP) == PUSHED) {
-            if(display_page == yaw_page) {
+            // Cycle pages on display
 
+            if(display_page == yaw_page) {
+                // Loop Pages
                 display_page = perc_page;
 
             } else {
@@ -125,14 +127,16 @@ void main(void)
         }
 
         if (checkButton(LEFT) == PUSHED) {
-
+            // Recalibrates Altitude
             initAltitude();
         }
 
+
         //Calculate new values to be displayed
         altitude = CalcAv();
-        percentage = CalcPerc(altitude);
-        distance = tick_to_deg();
+        percentage = CalcPerc(altitude);  //Scales analog average to percentage
+        distance = tick_to_deg();   // Converts tick count to yaw degrees
+
 
 
         //Update display on every 10th main loop

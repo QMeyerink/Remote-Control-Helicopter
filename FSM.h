@@ -35,7 +35,7 @@ enum state {
 typedef enum state state_t;
 
 
-uint8_t direction_calculator(bool sensorA, bool sensorB);
+void direction_calculator(bool sensorA);
 
 void init_state(bool sensorA, bool sensorB);
 

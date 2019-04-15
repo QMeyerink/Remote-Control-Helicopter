@@ -23,8 +23,7 @@ extern circBuf_t g_inBuffer;
 extern uint32_t g_ulSampCnt;
 
 
-void
-SysTickIntHandler(void)
+void SysTickIntHandler(void)
 {
     //
     // Initiate a conversion
@@ -39,8 +38,7 @@ SysTickIntHandler(void)
 // Writes to the circular buffer.
 //
 //*****************************************************************************
-void
-ADCIntHandler(void)
+void ADCIntHandler(void)
 {
     //Disable interrupts during this interrupt
     IntMasterDisable();
@@ -61,8 +59,7 @@ ADCIntHandler(void)
     IntMasterEnable();
 }
 
-void
-yawIntHandler (void)
+void yawIntHandler (void)
 {
     //Disable interrupts during interrupt
     IntMasterDisable();
@@ -77,7 +74,7 @@ yawIntHandler (void)
     pin_state_B = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1) == GPIO_INT_PIN_1);
 
     //Updates the global distance value.
-    direction_calculator(pin_state_A, pin_state_B);
+    direction_calculator(pin_state_A);
 
     //Re-enable interrupts
     IntMasterEnable();
