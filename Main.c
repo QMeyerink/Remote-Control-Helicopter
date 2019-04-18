@@ -2,12 +2,12 @@
 //
 // Main.c - Main program for helicopter milestone 2 project
 //
-//Takes analog sensor value from helicopter rig and
-// yaw sensor values and displays to OLED
+//Takes analog sensor value from helicopter rig (PE4) and
+// yaw sensor values (A = PB0, B = PB1) and displays to OLED
 // the percentage altitude and yaw angle
 //
 // Authors:  Quinlan Meyerink & Tyler Noah
-// Last modified:   15.4.2019
+// Last modified:   18.4.2019
 //
 
 #include <stdint.h>
@@ -61,11 +61,15 @@ void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t
 
     char line1[17]; // Display fits 16 characters wide.
     char line2[17];
+    char line3[17];
+    char line4[17];
 
     if(displayPage == 0)
     {
-        usnprintf (line1, sizeof(line1), "Altitude percent");
-        usnprintf (line2, sizeof(line2), "      %3d%%      ", Perc);
+        usnprintf (line1, sizeof(line1), "Yaw in degrees       " );
+        usnprintf (line2, sizeof(line2), "          %2d      ", distance);
+        usnprintf (line3, sizeof(line1), "Altitude percent");
+        usnprintf (line4, sizeof(line2), "      %3d%%      ", Perc);
     }
     else if(displayPage == 1)
     {
@@ -81,6 +85,8 @@ void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t
     //Draw specified strings.
     OLEDStringDraw (line1, 0, 0);
     OLEDStringDraw (line2, 0, 1);
+    OLEDStringDraw (line3, 0, 2);
+    OLEDStringDraw (line4, 0, 3);
 }
 
 void main(void)
@@ -122,7 +128,7 @@ void main(void)
                 display_page = perc_page;
 
             } else {
-                display_page++;
+                //display_page++;
             }
         }
 
