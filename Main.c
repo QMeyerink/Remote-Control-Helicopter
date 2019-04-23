@@ -67,7 +67,7 @@ void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t
     if(displayPage == 0)
     {
         usnprintf (line1, sizeof(line1), "Yaw in degrees       " );
-        usnprintf (line2, sizeof(line2), "          %2d      ", distance);
+        usnprintf (line2, sizeof(line2), "       %2d         ", distance);
         usnprintf (line3, sizeof(line1), "Altitude percent");
         usnprintf (line4, sizeof(line2), "      %3d%%      ", Perc);
     }

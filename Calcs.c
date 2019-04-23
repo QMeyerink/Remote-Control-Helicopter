@@ -1,3 +1,12 @@
+/*
+ * Calcs.c
+ *
+ *
+ *  Created on: 4/04/2019
+ *  For ENCE 361 Helicopter Project Milestone 2
+ *      Author: Quinlan Meyerink, Tyler Noah
+ */
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"
@@ -8,6 +17,7 @@
 #define BUF_SIZE 25
 #define SAMPLE_RATE_HZ 100
 #define PINS_TO_DEG_RATIO 0.8036
+#define ANALOG_RANGE 1092
 
 
 extern int32_t altitude_base;
@@ -38,10 +48,6 @@ int32_t CalcAv(void)
 
 int32_t CalcPerc(int32_t Average)
 {
-
-    int16_t ANALOG_MIN = 910;  // Shouldnt exist (Should just be altitude_base)
-    int16_t ANALOG_MAX = 2370; // need to change from hard code to 0.8v higher than BASE
-    int16_t ANALOG_RANGE = ANALOG_MAX - ANALOG_MIN;
 
     //Find the rounded percentage value of altitude
     //relative to inital altitude or set altitude

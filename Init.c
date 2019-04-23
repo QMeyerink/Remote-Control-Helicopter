@@ -1,3 +1,11 @@
+
+/*
+ * Init.h
+ *
+ *  Created on: 4/04/2019
+ *  For ENCE 361 Helicopter Project Milestone 2
+ *      Author: Quinlan Meyerink, Tyler Noah
+ */
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"
@@ -25,6 +33,7 @@
 
 extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;
+
 
 
 void

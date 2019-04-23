@@ -2,6 +2,7 @@
  * FSM.h
  *
  *  Created on: 10/04/2019
+ *  For ENCE 361 Helicopter Project Milestone 2
  *      Author: Quinlan Meyerink, Tyler Noah
  */
 

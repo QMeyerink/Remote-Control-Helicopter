@@ -1,3 +1,11 @@
+/*
+ * Interrupts.h
+ *
+ *  Created on: 4/04/2019
+ *  For ENCE 361 Helicopter Project Milestone 2
+ *      Author: Quinlan Meyerink, Tyler Noah
+ */
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"
@@ -67,11 +75,10 @@ void yawIntHandler (void)
     //Clear the interrupt
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1);
 
-    bool pin_state_A, pin_state_B;
+    bool pin_state_A;
 
     //Gives a high or low pin states
     pin_state_A = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_0) == GPIO_INT_PIN_0);
-    pin_state_B = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1) == GPIO_INT_PIN_1);
 
     //Updates the global distance value.
     direction_calculator(pin_state_A);
