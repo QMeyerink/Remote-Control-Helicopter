@@ -87,6 +87,8 @@ void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t
     OLEDStringDraw (line2, 0, 1);
     OLEDStringDraw (line3, 0, 2);
     OLEDStringDraw (line4, 0, 3);
+
+    //Note for PID branch
 }
 
 void main(void)
