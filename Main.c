@@ -88,7 +88,6 @@ void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t
     OLEDStringDraw (line3, 0, 2);
     OLEDStringDraw (line4, 0, 3);
 
-    //Note for PID branch
 }
 
 void main(void)
@@ -96,15 +95,10 @@ void main(void)
     //Run all initiate functions.
     initSystem();
 
-    //Enable system wide interrupts
-    IntMasterEnable();
-
     //Declare all local variables
-    int32_t altitude;
-    int32_t percentage;
+    int32_t altitude, percentage, distance;
     int8_t display_tick;
     pages_t display_page;
-    int32_t distance;
 
     //Set initial values for local variables
     display_page = perc_page;

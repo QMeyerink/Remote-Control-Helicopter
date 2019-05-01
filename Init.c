@@ -27,6 +27,7 @@
 #include "Interrupts.h"
 #include "Calcs.h"
 #include "FSM.h"
+#include "PWM_Module.h"
 
 #define BUF_SIZE 25
 #define SAMPLE_RATE_HZ 100
@@ -135,6 +136,13 @@ initYaw (void)
 }
 
 void
+initPWM()
+{
+    initialisePWM();
+
+}
+
+void
 initSystem(void)
 {
     initClock ();
@@ -142,5 +150,6 @@ initSystem(void)
     initDisplay();
     initButtons();
     initYaw();
+    initPWM();
     initCircBuf(&g_inBuffer, BUF_SIZE);
 }

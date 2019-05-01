@@ -41,6 +41,6 @@ void
 ADCIntHandler(void);
 
 void
-yawIntHandler (void);
+yawIntHandler(void);
 
 #endif /*Interrupts_h*/
