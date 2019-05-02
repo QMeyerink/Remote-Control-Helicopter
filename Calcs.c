@@ -16,7 +16,7 @@
 
 #define BUF_SIZE 25
 #define SAMPLE_RATE_HZ 100
-#define PINS_TO_DEG_RATIO 0.8036
+#define PINS_TO_DEG_RATIO 360/448
 #define ANALOG_RANGE 1092
 
 

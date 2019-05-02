@@ -45,8 +45,10 @@ void direction_calculator(bool sensorA)
 //one sensor changes value (A)
 {
     //If a full rotation has been completed set back to distance count back to 0
-    if((distance == NUM_OF_PINS)||(distance == -NUM_OF_PINS)) {
-        distance = 0;
+    if(distance == NUM_OF_PINS/2) {
+        distance = -180;
+    } else if(distance == -NUM_OF_PINS/2) {
+        distance = 180;
     }
 
     switch(previous_state) {
