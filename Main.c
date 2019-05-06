@@ -36,7 +36,6 @@
 #define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
 #define MAX_DISPLAY_TICKS 10    // Number of loops between OLED update.
 
-
 int32_t altitude_base;         //Initial altitude value
 circBuf_t g_inBuffer;          // Buffer of size BUF_SIZE integers (sample values)
 uint32_t g_ulSampCnt;          // Counter for the interrupts
@@ -49,7 +48,6 @@ enum pages {
     yaw_page
 
 };
-
 typedef enum pages pages_t;
 
 
@@ -63,7 +61,7 @@ void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t
     char line2[17];
     char line3[17];
     char line4[17];
-
+    /*
     if(displayPage == 0)
     {
         usnprintf (line1, sizeof(line1), "Yaw in degrees       " );
@@ -81,7 +79,7 @@ void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t
         usnprintf (line1, sizeof(line1), "Yaw in degrees       " );
         usnprintf (line2, sizeof(line2), "          %2d      ", distance);
     }
-
+    */
     //Draw specified strings.
     OLEDStringDraw (line1, 0, 0);
     OLEDStringDraw (line2, 0, 1);
@@ -96,7 +94,7 @@ void main(void)
     initSystem();
 
     //Declare all local variables
-    int32_t altitude, percentage, distance;
+    int32_t altitude, percentage, distance, altitudeGoal, yawGoal;
     int8_t display_tick;
     pages_t display_page;
 
@@ -116,23 +114,43 @@ void main(void)
         //Refresh button states
         updateButtons();
 
+        //Check state of buttons
         if (checkButton(UP) == PUSHED) {
-            // Cycle pages on display
-
-            if(display_page == yaw_page) {
-                // Loop Pages
-                display_page = perc_page;
-
+            //Increment altitude by +10% up to 100%
+            if (altitudeGoal > 90) {
+                altitudeGoal = 100;
             } else {
-                //display_page++;
+                    altitudeGoal += 10;
+                }
+            }
+        }
+
+        if (checkButton(DOWN) == PUSHED) {
+            //Increment altitude by -10% down to 0%
+            if (altitudeGoal < 10) {
+                altitudeGoal = 0;
+            } else {
+                altitudeGoal -= 10;
             }
         }
 
         if (checkButton(LEFT) == PUSHED) {
-            // Recalibrates Altitude
-            initAltitude();
+            ////Increment yaw by 15 deg down to -180
+            if (yawGoal < 165) {
+                yawGoal = -180;
+            } else {
+                yawGoal -= 15;
+            }
         }
 
+        if (checkButton(RIGHT) == PUSHED) {
+            //Increment yaw by 15 deg up to +180
+            if (yawGoal > 165) {
+                yawGoal = 180;
+            } else {
+                yawGoal += 15;
+            }
+        }
 
         //Calculate new values to be displayed
         altitude = CalcAv();
