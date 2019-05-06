@@ -40,6 +40,7 @@ int32_t altitude_base;         //Initial altitude value
 circBuf_t g_inBuffer;          // Buffer of size BUF_SIZE integers (sample values)
 uint32_t g_ulSampCnt;          // Counter for the interrupts
 
+/*
 //Enum data type for the OLED 'page' scrolling system.
 enum pages {
 
@@ -49,7 +50,7 @@ enum pages {
 
 };
 typedef enum pages pages_t;
-
+*/
 
 
 void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t distance)
@@ -61,25 +62,12 @@ void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t
     char line2[17];
     char line3[17];
     char line4[17];
-    /*
-    if(displayPage == 0)
-    {
-        usnprintf (line1, sizeof(line1), "Yaw in degrees       " );
-        usnprintf (line2, sizeof(line2), "       %2d         ", distance);
-        usnprintf (line3, sizeof(line1), "Altitude percent");
-        usnprintf (line4, sizeof(line2), "      %3d%%      ", Perc);
-    }
-    else if(displayPage == 1)
-    {
-        usnprintf (line1, sizeof(line1), "Mean Altitude    ");
-        usnprintf (line2, sizeof(line2), "      %2d        ", Altitude);
-    }
-    else if(displayPage == 2)
-    {
-        usnprintf (line1, sizeof(line1), "Yaw in degrees       " );
-        usnprintf (line2, sizeof(line2), "          %2d      ", distance);
-    }
-    */
+
+    usnprintf (line1, sizeof(line1), "Yaw Goal:          " );
+    usnprintf (line2, sizeof(line2), "       %2d         ", yawGoal);
+    usnprintf (line3, sizeof(line1), "Altitude Goal:     ");
+    usnprintf (line4, sizeof(line2), "      %3d%%        ", altitudeGoal);
+
     //Draw specified strings.
     OLEDStringDraw (line1, 0, 0);
     OLEDStringDraw (line2, 0, 1);
