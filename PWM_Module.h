@@ -45,7 +45,7 @@
 #define PWM_MAIN_GPIO_PIN    GPIO_PIN_5
 
 void
-setPWM(void);
+setPWM(int8_t rotor_select, int32_t altitudeGoal);
 
 void
 initialisePWM(void);

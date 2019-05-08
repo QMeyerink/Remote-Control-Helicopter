@@ -31,6 +31,8 @@
 #include "Interrupts.h"
 #include "Init.h"
 #include "Calcs.h"
+#include "PWM_Module.h"
+#include "PID_Controller.h"
 
 #define BUF_SIZE 25             // Size of circular buffer
 #define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
@@ -40,20 +42,9 @@ int32_t altitude_base;         //Initial altitude value
 circBuf_t g_inBuffer;          // Buffer of size BUF_SIZE integers (sample values)
 uint32_t g_ulSampCnt;          // Counter for the interrupts
 
-/*
-//Enum data type for the OLED 'page' scrolling system.
-enum pages {
-
-    perc_page,
-    raw_page,
-    yaw_page
-
-};
-typedef enum pages pages_t;
-*/
 
 
-void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t distance)
+void displayUpdate (int32_t altitudeGoal, int32_t yawGoal)
 {
     // Displays on the OLED, the altitude data (raw or percentage scaled) and the yaw distance
     // depending on which page has been selected
@@ -64,9 +55,9 @@ void displayUpdate (int32_t Altitude, int32_t Perc, pages_t displayPage, int32_t
     char line4[17];
 
     usnprintf (line1, sizeof(line1), "Yaw Goal:          " );
-    usnprintf (line2, sizeof(line2), "       %2d         ", yawGoal);
+    usnprintf (line2, sizeof(line2), "       %2d         ", yawGoal); //Checks goals to test
     usnprintf (line3, sizeof(line1), "Altitude Goal:     ");
-    usnprintf (line4, sizeof(line2), "      %3d%%        ", altitudeGoal);
+    usnprintf (line4, sizeof(line2), "      %3d%%        ", altitudeGoal); //Checks goals to test
 
     //Draw specified strings.
     OLEDStringDraw (line1, 0, 0);
@@ -82,13 +73,13 @@ void main(void)
     initSystem();
 
     //Declare all local variables
-    int32_t altitude, percentage, distance, altitudeGoal, yawGoal;
+    int32_t altitude, percentage, yaw, altitude_goal, yaw_goal;
     int8_t display_tick;
-    pages_t display_page;
 
     //Set initial values for local variables
-    display_page = perc_page;
     display_tick = 0;
+    altitude_goal = 0;
+    yaw_goal = 0;
 
     //Full clock delay allows sensor to fill buffer
     SysCtlDelay (SysCtlClockGet ());
@@ -105,51 +96,52 @@ void main(void)
         //Check state of buttons
         if (checkButton(UP) == PUSHED) {
             //Increment altitude by +10% up to 100%
-            if (altitudeGoal > 90) {
-                altitudeGoal = 100;
+            if (altitude_goal > 90) {
+                altitude_goal = 100;
             } else {
-                    altitudeGoal += 10;
+                altitude_goal += 10;
                 }
             }
-        }
 
         if (checkButton(DOWN) == PUSHED) {
             //Increment altitude by -10% down to 0%
-            if (altitudeGoal < 10) {
-                altitudeGoal = 0;
+            if (altitude_goal < 10) {
+                altitude_goal = 0;
             } else {
-                altitudeGoal -= 10;
+                altitude_goal -= 10;
             }
         }
 
         if (checkButton(LEFT) == PUSHED) {
             ////Increment yaw by 15 deg down to -180
-            if (yawGoal < 165) {
-                yawGoal = -180;
+            if (yaw_goal < -165) {
+                yaw_goal = -180;
             } else {
-                yawGoal -= 15;
+                yaw_goal -= 15;
             }
         }
 
         if (checkButton(RIGHT) == PUSHED) {
             //Increment yaw by 15 deg up to +180
-            if (yawGoal > 165) {
-                yawGoal = 180;
+            if (yaw_goal > 165) {
+                yaw_goal = 180;
             } else {
-                yawGoal += 15;
+                yaw_goal += 15;
             }
         }
 
         //Calculate new values to be displayed
         altitude = CalcAv();
         percentage = CalcPerc(altitude);  //Scales analog average to percentage
-        distance = tick_to_deg();   // Converts tick count to yaw degrees
+        yaw = tick_to_deg();   // Converts tick count to yaw degrees
 
+        pid_update(percentage, altitude_goal, g_ulSampCnt/100);
+        g_ulSampCnt = 0; //Reset the systick counter
 
 
         //Update display on every 10th main loop
         if (display_tick > MAX_DISPLAY_TICKS ) {
-            displayUpdate(altitude, percentage, display_page, distance);
+            displayUpdate(altitude_goal, yaw_goal);
             display_tick = 0;
 
         } else {

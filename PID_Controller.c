@@ -12,15 +12,28 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
+#include "PWM_Module.h"
 
 //Three gains for controllers (These are just random values i put in, they have no actual reasoning behind them)
 #define Kp 1.5
 #define Ki 2
 #define Kd 1
 
-static double pervious_error = 0.0
+static double pervious_error = 0.0;
+void PWM_rate_set(double control)
+{
+    //Transform the 'control' value to a duty cycle
 
-double pid_update(double altitude, double setpoint, double delta_t)
+    //Use set_pwm() to set new duty cycle.
+    if(control > 98) {
+        control = 98;
+    } else if(control < 3) {
+        control = 3;
+    }
+    setPWM(1, control);
+}
+
+void pid_update(double altitude, double setpoint, double delta_t)
 {
     double error, error_inter, error_deriv, control;
 
@@ -36,13 +49,6 @@ double pid_update(double altitude, double setpoint, double delta_t)
 
     pervious_error = error;
 
-    return control;
+    PWM_rate_set(control);
 }
 
-
-void PWM_rate_set(double control)
-{
-    //Transform the 'control' value to a duty cycle
-
-    //Use set_pwm() to set new duty cycle.
-}
