@@ -14,13 +14,20 @@
 #include "utils/ustdlib.h"
 
 //Three gains for controllers (These are just random values i put in, they have no actual reasoning behind them)
-#define Kp 1.5
-#define Ki 2
-#define Kd 1
+#define M_Kp 1.5
+#define M_Ki 3
+#define M_Kd 0
 
-static double pervious_error = 0.0;
+#define T_Kp 1
+#define T_Ki 0
+#define T_Kd 0
 
-void pid_update(double altitude, double setpoint, double delta_t);
+static double main_pervious_error = 0.0;
+static double tail_pervious_error = 0.0;
+
+void main_pid_update(double altitude, double setpoint, double delta_t);
+
+void tail_pid_update(double yaw, double setpoint, double delta_t);
 
 
 void PWM_rate_set(double control);

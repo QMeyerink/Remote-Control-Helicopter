@@ -15,12 +15,18 @@
 #include "PWM_Module.h"
 
 //Three gains for controllers (These are just random values i put in, they have no actual reasoning behind them)
-#define Kp 1.5
-#define Ki 2
-#define Kd 1
+#define M_Kp 1.5
+#define M_Ki 3
+#define M_Kd 0
 
-static double pervious_error = 0.0;
-void PWM_rate_set(double control)
+#define T_Kp 1
+#define T_Ki 0
+#define T_Kd 0
+
+static double main_pervious_error = 0.0;
+static double tail_pervious_error = 0.0;
+
+void PWM_rate_set(double control, int8_t rotor)
 {
     //Transform the 'control' value to a duty cycle
 
@@ -30,25 +36,45 @@ void PWM_rate_set(double control)
     } else if(control < 3) {
         control = 3;
     }
-    setPWM(1, control);
+    setPWM(rotor, control);
 }
 
-void pid_update(double altitude, double setpoint, double delta_t)
+void main_pid_update(double altitude, double setpoint, double delta_t)
 {
     double error, error_inter, error_deriv, control;
 
     //Error is the difference between where we are and where we want to be.
-    error = setpoint - altitude;
+    error = 10*(setpoint - altitude);
 
     //integrate and differentiate with respect to time.
     error_inter = error * delta_t;
-    error_deriv = (error - pervious_error) / delta_t;
+    error_deriv = (error - main_pervious_error) / delta_t;
 
     //Set control level value (This will set the PWM duty-cycle)
-    control = (error*Kp) + (error_deriv*Kd) + (error_inter*Ki);
+    control = (error*M_Kp) + (error_deriv*M_Kd) + (error_inter*M_Ki);
 
-    pervious_error = error;
+    main_pervious_error = error;
 
-    PWM_rate_set(control);
+    PWM_rate_set(control, 1);
 }
+
+void tail_pid_update(double yaw, double setpoint, double delta_t)
+{
+    double error, error_inter, error_deriv, control;
+
+    //Error is the difference between where we are and where we want to be.
+    error = (setpoint - yaw);
+
+    //integrate and differentiate with respect to time.
+    error_inter = error * delta_t;
+    error_deriv = (error - tail_pervious_error) / delta_t;
+
+    //Set control level value (This will set the PWM duty-cycle)
+    control = (error*T_Kp) + (error_deriv*T_Kd) + (error_inter*T_Ki);
+
+    tail_pervious_error = error;
+
+    PWM_rate_set(control, 0);
+}
+
 

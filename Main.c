@@ -73,13 +73,14 @@ void main(void)
     initSystem();
 
     //Declare all local variables
-    int32_t altitude, percentage, yaw, altitude_goal, yaw_goal;
+    int32_t altitude, percentage, yaw, altitude_goal, yaw_goal, delta_t;
     int8_t display_tick;
 
     //Set initial values for local variables
     display_tick = 0;
     altitude_goal = 0;
     yaw_goal = 0;
+    delta_t = 0;
 
     //Full clock delay allows sensor to fill buffer
     SysCtlDelay (SysCtlClockGet ());
@@ -135,8 +136,11 @@ void main(void)
         percentage = CalcPerc(altitude);  //Scales analog average to percentage
         yaw = tick_to_deg();   // Converts tick count to yaw degrees
 
-        pid_update(percentage, altitude_goal, g_ulSampCnt/100);
-        g_ulSampCnt = 0; //Reset the systick counter
+        delta_t = g_ulSampCnt - delta_t;
+
+       // main_pid_update(percentage, altitude_goal, delta_t/100);
+        setPWM(1, 52);
+        tail_pid_update(yaw, yaw_goal, delta_t/100);
 
 
         //Update display on every 10th main loop
