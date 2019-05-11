@@ -24,7 +24,7 @@
 #define SYSTICK_RATE_HZ    100
 
 // PWM configuration
-#define PWM_RATE_HZ        250
+#define PWM_RATE_HZ        50
 #define PWM_START_DUTY     3
 #define PWM_DIVIDER_CODE   SYSCTL_PWMDIV_4
 #define PWM_DIVIDER        4

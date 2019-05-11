@@ -87,6 +87,8 @@ void main(void)
 
     //Set initial altitude value
     initAltitude();
+    setPWM(1, 51);
+
 
 
     while(1)
@@ -138,8 +140,7 @@ void main(void)
 
         delta_t = g_ulSampCnt - delta_t;
 
-       // main_pid_update(percentage, altitude_goal, delta_t/100);
-        setPWM(1, 52);
+        //main_pid_update(percentage, altitude_goal, delta_t/100);
         tail_pid_update(yaw, yaw_goal, delta_t/100);
 
 

@@ -15,12 +15,12 @@
 #include "PWM_Module.h"
 
 //Three gains for controllers (These are just random values i put in, they have no actual reasoning behind them)
-#define M_Kp 1.5
-#define M_Ki 3
+#define M_Kp 3
+#define M_Ki 0
 #define M_Kd 0
 
-#define T_Kp 1
-#define T_Ki 0
+#define T_Kp 2
+#define T_Ki 1
 #define T_Kd 0
 
 static double main_pervious_error = 0.0;
@@ -31,10 +31,10 @@ void PWM_rate_set(double control, int8_t rotor)
     //Transform the 'control' value to a duty cycle
 
     //Use set_pwm() to set new duty cycle.
-    if(control > 98) {
-        control = 98;
-    } else if(control < 3) {
-        control = 3;
+    if(control > 70) {
+        control = 70;
+    } else if(control < 10) {
+        control = 10;
     }
     setPWM(rotor, control);
 }
