@@ -50,4 +50,7 @@ setPWM(int8_t rotor_select, int32_t altitudeGoal);
 void
 initialisePWM(void);
 
+void
+yaw_calibration(void);
+
 #endif /*PWM_Module_h*/

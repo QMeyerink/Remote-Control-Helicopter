@@ -28,9 +28,9 @@ static signed long error_inter_main = 0.0;
 static signed long error_inter_tail = 0.0;
 static signed long main_PWM = 0.0;
 
-void main_pid_update(int32_t altitude, int32_t setpoint, int32_t delta_t);
+void main_pid_update(int32_t altitude, int32_t setpoint, double delta_t);
 
-void tail_pid_update(int32_t yaw, int32_t setpoint, int32_t delta_t);
+void tail_pid_update(int32_t yaw, int32_t setpoint, double delta_t);
 
 
 void PWM_rate_set(int32_t control);

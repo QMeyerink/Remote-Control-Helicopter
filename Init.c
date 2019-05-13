@@ -117,17 +117,22 @@ initYaw (void)
 
 
         GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_0|GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD); // This code doesnt make sense but program fails without it.
+        GPIOPadConfigSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD); // This code doesnt make sense but program fails without it.
 
         // Set data direction register as output
         GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_0|GPIO_PIN_1, GPIO_DIR_MODE_IN);
+        GPIODirModeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_DIR_MODE_IN);
 
         // Set the int handler for this pin
         GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandler);
+        GPIOIntRegister(GPIO_PORTB_BASE, yawRefIntHandler);
 
         GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1, GPIO_BOTH_EDGES);
+        GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_INT_PIN_4, GPIO_RISING_EDGE);
 
         //Enable this interrupt
         GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1);
+        GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
 
         pin_state_A = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_0) == GPIO_INT_PIN_0);
         pin_state_B = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1) == GPIO_INT_PIN_1);
@@ -141,6 +146,7 @@ initPWM()
     initialisePWM();
 
 }
+
 
 void
 initSystem(void)

@@ -24,7 +24,7 @@
 
 extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
-uint32_t distance;
+int32_t distance;
 
 
 int32_t CalcAv(void);

@@ -10,6 +10,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 #include "buttons4.h"
+#include "FSM.h"
 
 /**********************************************************
  * Generates a single PWM signal on Tiva board pin J4-05 =
@@ -53,6 +54,7 @@
 #define PWM_TAIL_GPIO_CONFIG GPIO_PF1_M1PWM5
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
 
+extern flying_state_t fly_state;
 
 /*********************************************************
  * initialisePWM
@@ -109,6 +111,10 @@ initialisePWM (void)
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
 }
 
+void yaw_calibration(void) {
 
+    setPWM(1, 30);
+    setPWM(0, 40);
+    while(fly_state == calibration) {} //Wait for heli to find ref.
 
-
+}

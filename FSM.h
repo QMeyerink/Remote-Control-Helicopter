@@ -24,7 +24,7 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 
-enum state {
+enum yaw_state {
     state_one,
     state_two,
     state_three,
@@ -32,13 +32,27 @@ enum state {
 
 };
 
+enum flying_state {
+    landed = 0,
+    calibration,
+    flying,
+    landing,
 
-typedef enum state state_t;
+};
+
+typedef enum yaw_state yaw_state_t;
+typedef enum flying_state flying_state_t;
+#define NUM_OF_PINS 448
+
+yaw_state_t previous_state;
+flying_state_t fly_state;
+extern int32_t distance;
 
 
 void direction_calculator(bool sensorA);
 
 void init_state(bool sensorA, bool sensorB);
 
+void update_state(void);
 
 #endif /* FSM_H_ */

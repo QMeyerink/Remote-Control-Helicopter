@@ -66,7 +66,7 @@ void main_pid_update(int32_t altitude, int32_t setpoint, double delta_t)
     PWM_rate_set(main_PWM, 1);
 }
 
-void tail_pid_update(int32_t yaw, int32_t setpoint, int32_t delta_t)
+void tail_pid_update(int32_t yaw, int32_t setpoint, double delta_t)
 {
     int32_t error, error_deriv, control;
 

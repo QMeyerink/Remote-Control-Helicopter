@@ -26,7 +26,8 @@
 #include "FSM.h"
 
 
-
+extern int32_t distance;
+extern flying_state_t fly_state;
 extern circBuf_t g_inBuffer;
 extern uint32_t g_ulSampCnt;
 
@@ -87,6 +88,18 @@ void yawIntHandler (void)
     IntMasterEnable();
 }
 
+void yawRefIntHandler(void)
+{
+    IntMasterDisable();
+
+    GPIOIntClear(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+
+    distance = 0; //Set FSM yaw to 0 at ref
+    fly_state++; //Move from calibration to flying state.
+
+    IntMasterEnable();
+
+}
 
 
 

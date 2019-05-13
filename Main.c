@@ -42,6 +42,8 @@ int32_t altitude_base;         //Initial altitude value
 circBuf_t g_inBuffer;          // Buffer of size BUF_SIZE integers (sample values)
 uint32_t g_ulSampCnt;          // Counter for the interrupts
 
+extern flying_state_t fly_state;
+
 
 
 void displayUpdate (int32_t altitudeGoal, int32_t yawGoal)
@@ -86,6 +88,8 @@ void main(void)
 
     //Set initial altitude value
     initAltitude();
+
+
     //setPWM(1, 51);
 
 
@@ -94,7 +98,10 @@ void main(void)
     {
         //Refresh button states
         updateButtons();
+        update_state();
 
+
+        if(fly_state != landing) {
         //Check state of buttons
         if (checkButton(UP) == PUSHED) {
             //Increment altitude by +10% up to 100%
@@ -129,6 +136,13 @@ void main(void)
                 yaw_goal = 180;
             } else {
                 yaw_goal += 15;
+            }
+        }
+        } else {
+            yaw_goal = 0;
+            altitude_goal = 0;
+            if((percentage == 0)&&(yaw == 0)){
+                fly_state = landed;
             }
         }
 

@@ -19,20 +19,31 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
+#include "PWM_Module.h"
 
 
-enum state {
-    state_zero,
+enum yaw_state {
+    state_zero = 0,
     state_one,
     state_two,
     state_three
 
 };
 
-typedef enum state state_t;
+enum flying_state {
+    landed = 0,
+    calibration,
+    flying,
+    landing,
+
+};
+
+typedef enum yaw_state yaw_state_t;
+typedef enum flying_state flying_state_t;
 #define NUM_OF_PINS 448
 
-state_t previous_state;
+yaw_state_t previous_state;
+extern flying_state_t fly_state;
 extern int32_t distance;
 
 
@@ -105,7 +116,7 @@ void direction_calculator(bool sensorA)
 void init_state(bool sensorA, bool sensorB)
 //Selects start up state from the sensor input
 {
-    state_t return_state;
+    yaw_state_t return_state;
     distance = 0;
 
     //States are gray-coded to allow simple transitions
@@ -125,4 +136,19 @@ void init_state(bool sensorA, bool sensorB)
         }
     }
     previous_state = return_state;
+}
+
+void update_state() {
+
+    if(GPIOPinRead(GPIO_PORTA_BASE, GPIO_INT_PIN_7)) { //Check current position of slider switch.
+        if(fly_state == landed) { //Move from laded to calibration state
+            fly_state++;
+            yaw_calibration();
+        }
+    } else {
+        if(fly_state == flying){ //slider down, move from flying to landing
+            fly_state++;
+        }
+    }
+
 }
