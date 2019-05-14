@@ -94,7 +94,7 @@ void main(void)
     {
         //Refresh button states
         updateButtons();
-        update_state();
+        //update_state();
 
 
         if(fly_state != landing) {

@@ -15,8 +15,8 @@
 #include "PWM_Module.h"
 
 //Three gains for controllers
-#define M_Kp 0.9
-#define M_Ki 0
+#define M_Kp 1//0.9
+#define M_Ki 0.5
 #define M_Kd 0
 
 #define T_Kp 1.1
