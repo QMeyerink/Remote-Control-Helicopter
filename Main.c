@@ -56,8 +56,8 @@ void displayUpdate (int32_t altitudeGoal, int32_t yawGoal)
     char line3[17];
     char line4[17];
 
-    usnprintf (line1, sizeof(line1), "Yaw Goal:          " );
-    usnprintf (line2, sizeof(line2), "       %2d         ", yawGoal); //Checks goals to test
+    usnprintf (line1, sizeof(line1), "Flying state:          " );
+    usnprintf (line2, sizeof(line2), "       %2d         ", fly_state); //Checks goals to test
     usnprintf (line3, sizeof(line1), "Altitude Goal:     ");
     usnprintf (line4, sizeof(line2), "      %3d%%        ", altitudeGoal); //Checks goals to test
 
@@ -82,17 +82,13 @@ void main(void)
     display_tick = 0;
     altitude_goal = 0;
     yaw_goal = 0;
+    fly_state = landed;
 
     //Full clock delay allows sensor to fill buffer
     SysCtlDelay (SysCtlClockGet ());
 
     //Set initial altitude value
     initAltitude();
-
-
-    //setPWM(1, 51);
-
-
 
     while(1)
     {
@@ -103,47 +99,47 @@ void main(void)
 
         if(fly_state != landing) {
         //Check state of buttons
-        if (checkButton(UP) == PUSHED) {
-            //Increment altitude by +10% up to 100%
-            if (altitude_goal > 90) {
-                altitude_goal = 100;
-            } else {
-                altitude_goal += 10;
+            if (checkButton(UP) == PUSHED) {
+                //Increment altitude by +10% up to 100%
+                if (altitude_goal > 90) {
+                    altitude_goal = 100;
+                } else {
+                    altitude_goal += 10;
+                    }
+                }
+
+            if (checkButton(DOWN) == PUSHED) {
+                //Increment altitude by -10% down to 0%
+                if (altitude_goal < 10) {
+                    altitude_goal = 0;
+                } else {
+                    altitude_goal -= 10;
                 }
             }
 
-        if (checkButton(DOWN) == PUSHED) {
-            //Increment altitude by -10% down to 0%
-            if (altitude_goal < 10) {
+            if (checkButton(LEFT) == PUSHED) {
+                ////Increment yaw by 15 deg down to -180
+                if (yaw_goal < -165) {
+                    yaw_goal = -180;
+                } else {
+                    yaw_goal -= 15;
+                }
+            }
+
+            if (checkButton(RIGHT) == PUSHED) {
+                //Increment yaw by 15 deg up to +180
+                if (yaw_goal > 165) {
+                    yaw_goal = 180;
+                } else {
+                    yaw_goal += 15;
+                }
+            }
+            } else {
+                yaw_goal = 0;
                 altitude_goal = 0;
-            } else {
-                altitude_goal -= 10;
-            }
-        }
-
-        if (checkButton(LEFT) == PUSHED) {
-            ////Increment yaw by 15 deg down to -180
-            if (yaw_goal < -165) {
-                yaw_goal = -180;
-            } else {
-                yaw_goal -= 15;
-            }
-        }
-
-        if (checkButton(RIGHT) == PUSHED) {
-            //Increment yaw by 15 deg up to +180
-            if (yaw_goal > 165) {
-                yaw_goal = 180;
-            } else {
-                yaw_goal += 15;
-            }
-        }
-        } else {
-            yaw_goal = 0;
-            altitude_goal = 0;
-            if((percentage == 0)&&(yaw == 0)){
-                fly_state = landed;
-            }
+                if((percentage == 0)&&(yaw == 0)) {
+                    fly_state = landed;
+                }
         }
 
         //Calculate new values to be displayed
@@ -157,12 +153,12 @@ void main(void)
 
 
         //Update display on every 10th main loop
-        //if (display_tick > MAX_DISPLAY_TICKS ) {
-        //    displayUpdate(altitude_goal, yaw_goal);
-        //    display_tick = 0;
+        if (display_tick > MAX_DISPLAY_TICKS ) {
+            displayUpdate(altitude_goal, yaw_goal);
+            display_tick = 0;
 
-        //} else {
-        //    display_tick++;
-        //}
+        } else {
+            display_tick++;
+        }
     }
 }

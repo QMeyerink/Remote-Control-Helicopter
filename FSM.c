@@ -141,7 +141,7 @@ void init_state(bool sensorA, bool sensorB)
 void update_state() {
 
     if(GPIOPinRead(GPIO_PORTA_BASE, GPIO_INT_PIN_7)) { //Check current position of slider switch.
-        if(fly_state == landed) { //Move from laded to calibration state
+        if(fly_state == landed) { //Move from landed to calibration state
             fly_state++;
             yaw_calibration();
         }
