@@ -94,8 +94,9 @@ void main(void)
     {
         //Refresh button states
         updateButtons();
-        //update_state();
+        update_state();
 
+        if(fly_state != calibration) {
 
         if(fly_state != landing) {
         //Check state of buttons
@@ -151,7 +152,7 @@ void main(void)
         main_pid_update(percentage, altitude_goal, SysCtlClockGet() / 1000 );
         tail_pid_update(yaw, yaw_goal,  SysCtlClockGet() / 1000);
 
-
+        }
         //Update display on every 10th main loop
         if (display_tick > MAX_DISPLAY_TICKS ) {
             displayUpdate(altitude_goal, yaw_goal);

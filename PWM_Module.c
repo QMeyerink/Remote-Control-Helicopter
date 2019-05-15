@@ -114,7 +114,7 @@ initialisePWM (void)
 void yaw_calibration(void) {
 
     setPWM(1, 50);
-    setPWM(0, 90);
-    while(fly_state == calibration) {} //Wait for heli to find ref.
+    setPWM(0, 60);
+    //while(fly_state == calibration) {} //Wait for heli to find ref.
 
 }

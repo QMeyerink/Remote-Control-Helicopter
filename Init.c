@@ -129,14 +129,14 @@ initYaw (void)
 
         // Set the int handler for this pin
         GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandler);
-        GPIOIntRegister(GPIO_PORTB_BASE, yawRefIntHandler);
+        GPIOIntRegister(GPIO_PORTC_BASE, yawRefIntHandler);
 
         GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1, GPIO_BOTH_EDGES);
         GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_INT_PIN_4, GPIO_RISING_EDGE);
 
         //Enable this interrupt
         GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1);
-        GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+
 
         pin_state_A = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_0) == GPIO_INT_PIN_0);
         pin_state_B = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1) == GPIO_INT_PIN_1);
@@ -162,4 +162,16 @@ initSystem(void)
     initYaw();
     initPWM();
     initCircBuf(&g_inBuffer, BUF_SIZE);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+
+        // Set up the specific port pin as medium strength current & pull-down config.
+        // Refer to TivaWare peripheral lib user manual for set up for configuration options
+        GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+
+        // Set data direction register as output
+        GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_DIR_MODE_OUT);
+
+        // Write a zero to the output pin 3 on port F
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00);
+
 }

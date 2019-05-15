@@ -95,8 +95,8 @@ void yawRefIntHandler(void)
     GPIOIntClear(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
 
     distance = 0; //Set FSM yaw to 0 at ref
-    fly_state++; //Move from calibration to flying state.
-
+    fly_state = flying; //Move from calibration to flying state.
+    GPIOPinWrite(GPIO_PORTF_BASE,  GPIO_PIN_3, GPIO_PIN_3);
     IntMasterEnable();
 
 }
