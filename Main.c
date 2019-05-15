@@ -23,6 +23,7 @@
 #include "driverlib/systick.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/debug.h"
+#include "driverlib/uart.h"
 #include "utils/ustdlib.h"
 #include "circBufT.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
@@ -33,6 +34,8 @@
 #include "Calcs.h"
 #include "PWM_Module.h"
 #include "PID_Controller.h"
+#include "FSM.h"
+#include "UART.h"
 
 #define BUF_SIZE 25             // Size of circular buffer
 #define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
@@ -140,6 +143,8 @@ void main(void)
                 altitude_goal = 0;
                 if((percentage == 0)&&(yaw == 0)) {
                     fly_state = landed;
+                    setPWM(1,0);
+                    setPWM(0,0);
                 }
         }
 
@@ -156,6 +161,7 @@ void main(void)
         //Update display on every 10th main loop
         if (display_tick > MAX_DISPLAY_TICKS ) {
             displayUpdate(altitude_goal, yaw_goal);
+            UART_update(fly_state, yaw_goal, yaw, altitude_goal, percentage);
             display_tick = 0;
 
         } else {
