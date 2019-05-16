@@ -38,10 +38,11 @@ enum flying_state {
 
 };
 
+
 typedef enum yaw_state yaw_state_t;
 typedef enum flying_state flying_state_t;
-#define NUM_OF_PINS 448
 
+#define NUM_OF_PINS 448
 yaw_state_t previous_state;
 extern flying_state_t fly_state;
 extern int32_t distance;
@@ -61,7 +62,7 @@ void direction_calculator(bool sensorA)
     }
 
     switch(previous_state) {
-        case 0 : // A=0, B=0
+        case state_zero : // A=0, B=0
             if(sensorA) {
                 previous_state = state_three;
                 distance -= 1;
@@ -73,7 +74,7 @@ void direction_calculator(bool sensorA)
                 break;
             }
 
-        case 1 : // A=0, B=1
+        case state_one : // A=0, B=1
             if(sensorA) {
                 previous_state = state_two;
                 distance += 1;
@@ -85,7 +86,7 @@ void direction_calculator(bool sensorA)
                 break;
             }
 
-        case 2 : // A=1, B=1
+        case state_two : // A=1, B=1
             if(sensorA) {
                 previous_state = state_three;
                 distance += 1;
@@ -97,7 +98,7 @@ void direction_calculator(bool sensorA)
                 break;
             }
 
-        case 3 : // A=1, B=0
+        case state_three : // A=1, B=0
             if(sensorA) {
                 previous_state = state_two;
                 distance -= 1;
@@ -143,7 +144,6 @@ void update_state() {
     if(GPIOPinRead(GPIO_PORTA_BASE, GPIO_INT_PIN_7) == GPIO_INT_PIN_7) { //Check current position of slider switch.
         if(fly_state == landed) { //Move from landed to calibration state
             fly_state = calibration;
-            GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
             yaw_calibration();
 
         }

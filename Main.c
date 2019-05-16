@@ -41,36 +41,18 @@
 #define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
 #define MAX_DISPLAY_TICKS 10    // Number of loops between OLED update.
 
+#define YAW_STEP 15
+#define ALTITUDE_STEP 10
+#define ALTITUDE_MAX 100
+#define ALTITUDE_MIN 0
+#define YAW_MIN -180
+#define YAW_MAX 180
+
 int32_t altitude_base;         //Initial altitude value
 circBuf_t g_inBuffer;          // Buffer of size BUF_SIZE integers (sample values)
 uint32_t g_ulSampCnt;          // Counter for the interrupts
 
 extern flying_state_t fly_state;
-
-
-
-void displayUpdate (int32_t altitudeGoal, int32_t yawGoal)
-{
-    // Displays on the OLED, the altitude data (raw or percentage scaled) and the yaw distance
-    // depending on which page has been selected
-
-    char line1[17]; // Display fits 16 characters wide.
-    char line2[17];
-    char line3[17];
-    char line4[17];
-
-    usnprintf (line1, sizeof(line1), "Flying state:          " );
-    usnprintf (line2, sizeof(line2), "       %2d         ", fly_state); //Checks goals to test
-    usnprintf (line3, sizeof(line1), "Altitude Goal:     ");
-    usnprintf (line4, sizeof(line2), "      %3d%%        ", altitudeGoal); //Checks goals to test
-
-    //Draw specified strings.
-    OLEDStringDraw (line1, 0, 0);
-    OLEDStringDraw (line2, 0, 1);
-    OLEDStringDraw (line3, 0, 2);
-    OLEDStringDraw (line4, 0, 3);
-
-}
 
 void main(void)
 {
@@ -97,70 +79,71 @@ void main(void)
     {
         //Refresh button states
         updateButtons();
+
+        while(fly_state == landed) {
         update_state();
+        setPWM(1,0);
+        setPWM(0,0);
+        }
 
         if(fly_state != calibration) {
 
-        if(fly_state != landing) {
-        //Check state of buttons
-            if (checkButton(UP) == PUSHED) {
-                //Increment altitude by +10% up to 100%
-                if (altitude_goal > 90) {
-                    altitude_goal = 100;
-                } else {
-                    altitude_goal += 10;
+            if(fly_state != landing) {
+            //Check state of buttons
+                if (checkButton(UP) == PUSHED) {
+                    //Increment altitude by +10% up to 100%
+                    if (altitude_goal > 90) {
+                        altitude_goal = ALTITUDE_MAX;
+                    } else {
+                        altitude_goal += ALTITUDE_STEP;
+                        }
+                    }
+
+                if (checkButton(DOWN) == PUSHED) {
+                    //Increment altitude by -10% down to 0%
+                    if (altitude_goal < 10) {
+                        altitude_goal = ALTITUDE_MIN;
+                    } else {
+                        altitude_goal -= ALTITUDE_STEP;
                     }
                 }
 
-            if (checkButton(DOWN) == PUSHED) {
-                //Increment altitude by -10% down to 0%
-                if (altitude_goal < 10) {
-                    altitude_goal = 0;
-                } else {
-                    altitude_goal -= 10;
+                if (checkButton(LEFT) == PUSHED) {
+                    ////Increment yaw by 15 deg down to -180
+                    if (yaw_goal < -165) {
+                        yaw_goal = -YAW_MIN;
+                    } else {
+                        yaw_goal -= YAW_STEP;
+                    }
                 }
+
+                if (checkButton(RIGHT) == PUSHED) {
+                    //Increment yaw by 15 deg up to +180
+                    if (yaw_goal > 165) {
+                        yaw_goal = YAW_MAX;
+                    } else {
+                        yaw_goal += YAW_STEP;
+                    }
+                }
+                } else {
+                    yaw_goal = 0;
+                    altitude_goal = ALTITUDE_MAX;
+                    if((percentage == 0)&&(yaw == 0)) {
+                        fly_state = landed;
+                    }
             }
 
-            if (checkButton(LEFT) == PUSHED) {
-                ////Increment yaw by 15 deg down to -180
-                if (yaw_goal < -165) {
-                    yaw_goal = -180;
-                } else {
-                    yaw_goal -= 15;
-                }
-            }
-
-            if (checkButton(RIGHT) == PUSHED) {
-                //Increment yaw by 15 deg up to +180
-                if (yaw_goal > 165) {
-                    yaw_goal = 180;
-                } else {
-                    yaw_goal += 15;
-                }
-            }
-            } else {
-                yaw_goal = 0;
-                altitude_goal = 0;
-                if((percentage == 0)&&(yaw == 0)) {
-                    fly_state = landed;
-                    setPWM(1,0);
-                    setPWM(0,0);
-                }
-        }
-
-        //Calculate new values to be displayed
-        altitude = CalcAv();
-        percentage = CalcPerc(altitude);  //Scales analog average to percentage
-        yaw = tick_to_deg();   // Converts tick count to yaw degrees
+            //Calculate new values to be displayed
+            altitude = CalcAv();
+            percentage = CalcPerc(altitude);  //Scales analog average to percentage
+            yaw = tick_to_deg();   // Converts tick count to yaw degrees
 
 
-        main_pid_update(percentage, altitude_goal, SysCtlClockGet() / 1000 );
-        tail_pid_update(yaw, yaw_goal,  SysCtlClockGet() / 1000);
+            pid_update(percentage, altitude_goal, yaw, yaw_goal, SysCtlClockGet() / 1000 );
 
         }
         //Update display on every 10th main loop
         if (display_tick > MAX_DISPLAY_TICKS ) {
-            displayUpdate(altitude_goal, yaw_goal);
             UART_update(fly_state, yaw_goal, yaw, altitude_goal, percentage);
             display_tick = 0;
 

@@ -54,7 +54,9 @@
 #define PWM_TAIL_GPIO_CONFIG GPIO_PF1_M1PWM5
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
 
-extern flying_state_t fly_state;
+#define CALIBRATION_YAW_PWM_DUTY 65
+#define CALIBRATION_ALTITUDE_PWM_DUTY 40
+
 
 /*********************************************************
  * initialisePWM
@@ -111,10 +113,11 @@ initialisePWM (void)
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
 }
 
-void yaw_calibration(void) {
+void
+yaw_calibration (void) {
 
-    setPWM(1, 50);
-    setPWM(0, 75);
-    //while(fly_state == calibration) {} //Wait for heli to find ref.
+    GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4); //enable interrupt for yaw calibration
+    setPWM(1, CALIBRATION_ALTITUDE_PWM_DUTY);       //set the motors to calbration levels untill interrupt occurs.
+    setPWM(0, CALIBRATION_YAW_PWM_DUTY );
 
 }
