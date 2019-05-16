@@ -31,7 +31,7 @@
 //********************************************************
 // Constants
 //********************************************************
-#define MAX_STR_LEN 16
+#define MAX_STR_LEN 20
 //---USB Serial comms: UART0, Rx:PA0 , Tx:PA1
 #define BAUD_RATE 9600
 #define UART_USB_BASE           UART0_BASE
@@ -72,12 +72,12 @@ void
 UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_t altitude_goal, int32_t altitude)
 {
     char statusStr[MAX_STR_LEN + 1];
-    usprintf (statusStr, "State:%2d \n\n", fly_state);
+    usprintf (statusStr, "State: %2d \n", fly_state);
     UARTSend (statusStr);
-    usprintf (statusStr, "Yaw:  %2d [%2d]\n\n", yaw, yaw_goal);
+    usprintf (statusStr, "Yaw: %2d [%2d]\n", yaw, yaw_goal);
     UARTSend (statusStr);
-    usprintf (statusStr, "Alt:  %2d [%2d]\n\n", altitude, altitude_goal);
+    usprintf (statusStr, "Alt: %2d [%2d]\n", altitude, altitude_goal);
     UARTSend (statusStr);
-    usprintf (statusStr, "--------------\n\n", altitude, altitude_goal);
+    usprintf (statusStr, "00000000000000000000");
 
 }

@@ -39,7 +39,7 @@
 
 #define BUF_SIZE 25             // Size of circular buffer
 #define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
-#define MAX_DISPLAY_TICKS 10    // Number of loops between OLED update.
+#define MAX_DISPLAY_TICKS 100    // Number of loops between OLED update.
 
 #define YAW_STEP 15
 #define ALTITUDE_STEP 10
@@ -125,24 +125,23 @@ void main(void)
                         yaw_goal += YAW_STEP;
                     }
                 }
-                } else {
+                } else { //Are in landing state
                     yaw_goal = 0;
-                    altitude_goal = ALTITUDE_MAX;
-                    if((percentage == 0)&&(yaw == 0)) {
+                    altitude_goal = ALTITUDE_MIN;
+                    if((percentage == 0)&&(yaw == 0)) { //Check that we've landed
                         fly_state = landed;
                     }
             }
-
-            //Calculate new values to be displayed
+            //Read sensors for yaw and alt - done for all flying states
             altitude = CalcAv();
             percentage = CalcPerc(altitude);  //Scales analog average to percentage
             yaw = tick_to_deg();   // Converts tick count to yaw degrees
-
-
+            //Update control to rotors based on where we are and where we wanna be --not done when calibrating
             pid_update(percentage, altitude_goal, yaw, yaw_goal, SysCtlClockGet() / 1000 );
-
         }
-        //Update display on every 10th main loop
+
+
+        //Update serial on every 10th main loop
         if (display_tick > MAX_DISPLAY_TICKS ) {
             UART_update(fly_state, yaw_goal, yaw, altitude_goal, percentage);
             display_tick = 0;
