@@ -54,6 +54,7 @@ uint32_t g_ulSampCnt;          // Counter for the interrupts
 
 extern flying_state_t fly_state;
 
+
 void main(void)
 {
     //Run all initiate functions.
@@ -79,16 +80,9 @@ void main(void)
     {
         //Refresh button states
         updateButtons();
-
-        while(fly_state == landed) {
         update_state();
-        setPWM(1,0);
-        setPWM(0,0);
-        }
 
-        if(fly_state != calibration) {
-
-            if(fly_state != landing) {
+        if(fly_state != landing) {
             //Check state of buttons
                 if (checkButton(UP) == PUSHED) {
                     //Increment altitude by +10% up to 100%
@@ -125,20 +119,26 @@ void main(void)
                         yaw_goal += YAW_STEP;
                     }
                 }
-                } else { //Are in landing state
-                    yaw_goal = 0;
-                    altitude_goal = ALTITUDE_MIN;
-                    if((percentage == 0)&&(yaw == 0)) { //Check that we've landed
-                        fly_state = landed;
-                    }
+        }
+        if(fly_state == landing) {
+            yaw_goal = 0;
+            altitude_goal = 0;
+            if(percentage == 0 && yaw == 0) {
+                fly_state = landed;
+                setPWM(1,0);
+                setPWM(0,0);
             }
+        }
+
             //Read sensors for yaw and alt - done for all flying states
             altitude = CalcAv();
             percentage = CalcPerc(altitude);  //Scales analog average to percentage
             yaw = tick_to_deg();   // Converts tick count to yaw degrees
+
+            if(fly_state != calibration && fly_state != landed) {
             //Update control to rotors based on where we are and where we wanna be --not done when calibrating
             pid_update(percentage, altitude_goal, yaw, yaw_goal, SysCtlClockGet() / 1000 );
-        }
+            }
 
 
         //Update serial on every 10th main loop
