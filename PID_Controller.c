@@ -15,14 +15,15 @@
 #include "PWM_Module.h"
 
 //Three gains for controllers
+//Coments next to gains show previous commit's gains
 //Main Rotor
-#define M_Kp 0.6
-#define M_Ki 0.009
-#define M_Kd 0.8
+#define M_Kp 0.1 //0.4
+#define M_Ki 0 // 0.009
+#define M_Kd 0 //0.8
 //Tail Rotor
-#define T_Kp 1.5
-#define T_Ki 0.009
-#define T_Kd 0 //2.8
+#define T_Kp 1.8 // 1
+#define T_Ki 0.2 // 0.1
+#define T_Kd 0 // 0.8
 
 #define TAIL 0
 #define MAIN 1

@@ -137,7 +137,7 @@ void main(void)
 
             if(fly_state != calibration && fly_state != landed) {
             //Update control to rotors based on where we are and where we wanna be --not done when calibrating
-            pid_update(percentage, altitude_goal, yaw, yaw_goal, SysCtlClockGet() / 1000 );
+            pid_update(percentage, altitude_goal, yaw, yaw_goal, SysCtlClockGet()/1000 );
             }
 
 
