@@ -17,8 +17,8 @@
 //Three gains for controllers
 //Coments next to gains show previous commit's gains
 //Main Rotor
-#define M_Kp 0.1 //0.4
-#define M_Ki 0 // 0.009
+#define M_Kp 0.4 //0.4
+#define M_Ki 0.00009 // 0.009
 #define M_Kd 0 //0.8
 //Tail Rotor
 #define T_Kp 1.8 // 1
@@ -28,7 +28,7 @@
 #define TAIL 0
 #define MAIN 1
 #define MAXIMUM_DUTY_CYCLE 98
-#define MINIMUM_DUTY_CYCLE 0
+#define MINIMUM_DUTY_CYCLE 2
 
 
 static int32_t altitude_pervious_error = 0.0;
@@ -74,16 +74,16 @@ void pid_update(int32_t altitude, int32_t altitude_setpoint, int32_t yaw, int32_
 
     //Set control level value (This will set the PWM duty-cycle)
     altitude_control = 10 + (altitude_error*M_Kp) + (error_inter_main*M_Ki) + (altitude_error_deriv*M_Kd);
-    yaw_control = (yaw_error*T_Kp) + (error_inter_main*T_Ki) + (yaw_error_deriv*T_Kd);
+    yaw_control = (yaw_error*T_Kp) + (error_inter_tail*T_Ki) + (yaw_error_deriv*T_Kd);
 
     //Update the previous error
     altitude_pervious_error = altitude_error;
     yaw_pervious_error = yaw_error;
 
-    if(altitude_error == 0) {
+    if(altitude_error < 1 && altitude_error > -1) {
         error_inter_main = 0; //Reset inter error system
     }
-    if(yaw_error == 0) {
+    if(yaw_error < 1 && yaw_error > -1) {
         error_inter_tail = 0; //Reset inter error system
     }
 

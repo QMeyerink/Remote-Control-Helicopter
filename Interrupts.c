@@ -92,6 +92,7 @@ void yawRefIntHandler(void)
 {
     IntMasterDisable();
     GPIOIntClear(GPIO_PORTC_BASE, GPIO_INT_PIN_4); //Clear this interrupts flag
+    GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
 
     distance = 0; //Set FSM yaw to 0 at ref
     fly_state = flying; //Move from calibration to flying state.
