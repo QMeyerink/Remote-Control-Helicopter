@@ -54,7 +54,7 @@
 #define PWM_TAIL_GPIO_CONFIG GPIO_PF1_M1PWM5
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
 
-#define CALIBRATION_YAW_PWM_DUTY 10
+#define CALIBRATION_YAW_PWM_DUTY 80
 #define CALIBRATION_ALTITUDE_PWM_DUTY 5
 
 
@@ -118,6 +118,6 @@ yaw_calibration (void) {
 
     GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4); //enable interrupt for yaw calibration
     setPWM(1, 15);       //set the motors to calbration levels untill interrupt occurs.
-    setPWM(0, 35);
+    setPWM(0, 50);
 
 }
