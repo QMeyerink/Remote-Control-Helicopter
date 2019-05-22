@@ -85,13 +85,6 @@ void pid_update(int32_t altitude, int32_t altitude_setpoint, int32_t yaw, int32_
     altitude_pervious_error = altitude_error;
     yaw_pervious_error = yaw_error;
 
-    if(altitude_error < 1 && altitude_error > -1) {
-        error_inter_main = 0; //Reset inter error system
-    }
-    if(yaw_error < 1 && yaw_error > -1) {
-        error_inter_tail = 0; //Reset inter error system
-    }
-
     PWM_rate_set();
 }
 
