@@ -53,6 +53,8 @@ circBuf_t g_inBuffer;          // Buffer of size BUF_SIZE integers (sample value
 uint32_t g_ulSampCnt;          // Counter for the interrupts
 
 extern flying_state_t fly_state;
+extern int32_t altitude_control;
+extern int32_t yaw_control;
 
 
 void main(void)
@@ -81,6 +83,10 @@ void main(void)
         //Refresh button states
         updateButtons();
         update_state();
+
+        if(checkButton(RESET) == PUSHED) {
+            SysCtlReset();
+        }
 
         if(fly_state != landing) {
             //Check state of buttons
@@ -143,7 +149,7 @@ void main(void)
 
         //Update serial on every 10th main loop
         if (display_tick > MAX_DISPLAY_TICKS ) {
-            UART_update(fly_state, yaw_goal, yaw, altitude_goal, percentage);
+            UART_update(fly_state, yaw_goal, yaw, altitude_goal, percentage, altitude_control, yaw_control);
             display_tick = 0;
 
         } else {

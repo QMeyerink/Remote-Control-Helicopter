@@ -31,13 +31,17 @@
 #define MINIMUM_DUTY_CYCLE 2
 
 
+
 static int32_t altitude_pervious_error = 0.0;
 static int32_t yaw_pervious_error = 0.0;
+
+extern int32_t altitude_control = 0;
+extern int32_t yaw_control = 0;
 
 static int32_t error_inter_main = 0.0;
 static int32_t error_inter_tail = 0.0;
 
-void PWM_rate_set(int32_t altitude_control, int32_t yaw_control)
+void PWM_rate_set()
 {
     //make sure PWM signal doesnt go out of bounds
 
@@ -59,7 +63,7 @@ void PWM_rate_set(int32_t altitude_control, int32_t yaw_control)
 
 void pid_update(int32_t altitude, int32_t altitude_setpoint, int32_t yaw, int32_t yaw_setpoint, double delta_t)
 {
-    int32_t altitude_error, altitude_error_deriv, altitude_control, yaw_error, yaw_error_deriv, yaw_control;
+    int32_t altitude_error, altitude_error_deriv, yaw_error, yaw_error_deriv;
 
     //Error is the difference between where we are and where we want to be.
     altitude_error = (altitude_setpoint - altitude);
@@ -88,6 +92,6 @@ void pid_update(int32_t altitude, int32_t altitude_setpoint, int32_t yaw, int32_
         error_inter_tail = 0; //Reset inter error system
     }
 
-    PWM_rate_set(altitude_control, yaw_control);
+    PWM_rate_set();
 }
 
