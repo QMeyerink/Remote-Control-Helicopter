@@ -86,9 +86,6 @@ void main(void)
 
         if(checkButton(RESET) == PUSHED) {
             SysCtlReset();
-            fly_state = landed;
-            yaw_goal = 0;
-            altitude_goal = 0;
         }
 
         if(fly_state != landing) {

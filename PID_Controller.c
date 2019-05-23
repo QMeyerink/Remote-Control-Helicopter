@@ -21,9 +21,9 @@
 #define M_Ki 0.0007 // 0.009
 #define M_Kd 0.3 //0.8
 //Tail Rotor
-#define T_Kp 0.2 // 1
-#define T_Ki 0.0008 // 0.1
-#define T_Kd 1.2 // 0.8
+#define T_Kp 1 // 1
+#define T_Ki 0.0006 // 0.1
+#define T_Kd 2.5 // 0.8
 
 #define TAIL 0
 #define MAIN 1
