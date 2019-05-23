@@ -23,7 +23,7 @@
 //Tail Rotor
 #define T_Kp 0.2 // 1
 #define T_Ki 0.0008 // 0.1
-#define T_Kd 1 // 0.8
+#define T_Kd 1.2 // 0.8
 
 #define TAIL 0
 #define MAIN 1
@@ -68,6 +68,7 @@ void pid_update(int32_t altitude, int32_t altitude_setpoint, int32_t yaw, int32_
     //Error is the difference between where we are and where we want to be.
     altitude_error = (altitude_setpoint - altitude);
     yaw_error = (yaw_setpoint - yaw);
+
 
     //Calculate the integral error
     error_inter_main = altitude_error * delta_t;

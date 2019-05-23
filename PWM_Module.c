@@ -118,6 +118,6 @@ yaw_calibration (void) {
 
     GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4); //enable interrupt for yaw calibration
     setPWM(1, 15);       //set the motors to calbration levels untill interrupt occurs.
-    setPWM(0, 40);
+    setPWM(0, 30);
 
 }
