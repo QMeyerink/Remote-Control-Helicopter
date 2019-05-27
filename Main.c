@@ -36,6 +36,7 @@
 #include "PID_Controller.h"
 #include "FSM.h"
 #include "UART.h"
+#include "Yaw.h"
 
 #define BUF_SIZE 25             // Size of circular buffer
 #define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
@@ -55,6 +56,107 @@ uint32_t g_ulSampCnt;          // Counter for the interrupts
 extern flying_state_t fly_state;
 extern int32_t altitude_control;
 extern int32_t yaw_control;
+
+
+void
+initClock (void)
+{
+    // Set the clock rate to 20 MHz
+    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
+                   SYSCTL_XTAL_16MHZ);
+    //
+    // Set up the period for the SysTick timer.  The SysTick timer period is
+    // set as a function of the system clock.
+    SysTickPeriodSet(SysCtlClockGet() / SAMPLE_RATE_HZ);
+    //
+    // Register the interrupt handler
+    SysTickIntRegister(SysTickIntHandler);
+    //
+    // Enable interrupt and device
+    SysTickIntEnable();
+    SysTickEnable();
+}
+
+
+void
+initDisplay (void)
+{
+  // Intialise the Orbit OLED display
+    OLEDInitialise ();
+}
+
+void initAltitude(void)
+{
+    //Calibrates the current mean ADC reading to be the Base Altitude
+
+    altitude_base = CalcAv();
+
+}
+
+void
+initSystem(void)
+{
+    initClock ();
+    initADC();
+    initDisplay();
+    initButtons();
+    initYaw();
+    initialisePWM();
+    initialiseUSB_UART();
+    initCircBuf(&g_inBuffer, BUF_SIZE);
+}
+
+int32_t update_altitude_goal(int32_t altitude_goal, flying_state_t fly_state)
+{
+    if(fly_state == landing){
+        return 0;
+    }
+
+    if (checkButton(UP) == PUSHED) {
+        if (altitude_goal > 90) {
+            altitude_goal = ALTITUDE_MAX;
+        } else {
+            altitude_goal += ALTITUDE_STEP;
+        }
+    }
+
+    if (checkButton(DOWN) == PUSHED) {
+    //Increment altitude by -10% down to 0%
+        if (altitude_goal < 10) {
+            altitude_goal = ALTITUDE_MIN;
+        } else {
+            altitude_goal -= ALTITUDE_STEP;
+        }
+    }
+    return altitude_goal;
+}
+
+int32_t update_yaw_goal(int32_t yaw_goal, flying_state_t fly_state)
+{
+    if(fly_state == landing){
+        return 0;
+    }
+
+    if (checkButton(LEFT) == PUSHED) {
+        ////Increment yaw by 15 deg down to -180
+        if (yaw_goal < -165) {
+            yaw_goal = -YAW_MIN;
+        } else {
+            yaw_goal -= YAW_STEP;
+        }
+    }
+
+    if (checkButton(RIGHT) == PUSHED) {
+        //Increment yaw by 15 deg up to +180
+        if (yaw_goal > 165) {
+            yaw_goal = YAW_MAX;
+        } else {
+            yaw_goal += YAW_STEP;
+        }
+    }
+
+    return yaw_goal;
+}
 
 
 void main(void)
@@ -82,70 +184,29 @@ void main(void)
     {
         //Refresh button states
         updateButtons();
+
+        //Check current system state
         update_state();
 
-        if(checkButton(RESET) == PUSHED) {
-            SysCtlReset();
-        }
+        if(fly_state != landed) {
+            //update the goal
+            yaw_goal = update_yaw_goal(yaw_goal, fly_state);
+            altitude_goal = update_altitude_goal(altitude_goal, fly_state);
 
-        if(fly_state != landing) {
-            //Check state of buttons
-                if (checkButton(UP) == PUSHED) {
-                    //Increment altitude by +10% up to 100%
-                    if (altitude_goal > 90) {
-                        altitude_goal = ALTITUDE_MAX;
-                    } else {
-                        altitude_goal += ALTITUDE_STEP;
-                        }
-                    }
-
-                if (checkButton(DOWN) == PUSHED) {
-                    //Increment altitude by -10% down to 0%
-                    if (altitude_goal < 10) {
-                        altitude_goal = ALTITUDE_MIN;
-                    } else {
-                        altitude_goal -= ALTITUDE_STEP;
-                    }
-                }
-
-                if (checkButton(LEFT) == PUSHED) {
-                    ////Increment yaw by 15 deg down to -180
-                    if (yaw_goal < -165) {
-                        yaw_goal = -YAW_MIN;
-                    } else {
-                        yaw_goal -= YAW_STEP;
-                    }
-                }
-
-                if (checkButton(RIGHT) == PUSHED) {
-                    //Increment yaw by 15 deg up to +180
-                    if (yaw_goal > 165) {
-                        yaw_goal = YAW_MAX;
-                    } else {
-                        yaw_goal += YAW_STEP;
-                    }
-                }
-        }
-        if(fly_state == landing) {
-            yaw_goal = 0;
-            altitude_goal = 0;
-            if(percentage == 0 && yaw == 0) {
-                fly_state = landed;
-                setPWM(1,0);
-                setPWM(0,0);
+            //Check if reset button has been pressed
+            if(checkButton(RESET) == PUSHED) {
+                SysCtlReset();
             }
-        }
 
-            //Read sensors for yaw and alt - done for all flying states
-            altitude = CalcAv();
+            altitude = CalcAv(); //Calculates the average ADC altitude value
             percentage = CalcPerc(altitude);  //Scales analog average to percentage
             yaw = tick_to_deg();   // Converts tick count to yaw degrees
 
-            if(fly_state != calibration && fly_state != landed) {
-            //Update control to rotors based on where we are and where we wanna be --not done when calibrating
-            pid_update(percentage, altitude_goal, yaw, yaw_goal, 1000 );
-            }
+            if(fly_state != calibration) {
 
+                pid_update(percentage, altitude_goal, yaw, yaw_goal, 1000 ); //Update control PWM signals for rotors.
+            }
+        }
 
         //Update serial on every 10th main loop
         if (display_tick > MAX_DISPLAY_TICKS ) {

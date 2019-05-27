@@ -44,13 +44,8 @@
 #define PWM_MAIN_GPIO_CONFIG GPIO_PC5_M0PWM7
 #define PWM_MAIN_GPIO_PIN    GPIO_PIN_5
 
-void
-setPWM(int8_t rotor_select, int32_t altitudeGoal);
+void setPWM(uint8_t rotor_select, uint32_t ui32Duty);
 
-void
-initialisePWM(void);
-
-void
-yaw_calibration(void);
+void initialisePWM(void);
 
 #endif /*PWM_Module_h*/

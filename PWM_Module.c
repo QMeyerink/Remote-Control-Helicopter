@@ -63,8 +63,7 @@
  * M0PWM7 (J4-05, PC5) is used for the main rotor motor
  *********************************************************/
 
-void
-setPWM (uint8_t rotor_select, uint32_t ui32Duty)
+void setPWM (uint8_t rotor_select, uint32_t ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =
@@ -81,8 +80,7 @@ setPWM (uint8_t rotor_select, uint32_t ui32Duty)
     }
 }
 
-void
-initialisePWM (void)
+void initialisePWM (void)
 {
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_PWM);
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_GPIO);
@@ -113,11 +111,3 @@ initialisePWM (void)
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
 }
 
-void
-yaw_calibration (void) {
-
-    GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4); //enable interrupt for yaw calibration
-    setPWM(1, 15);       //set the motors to calbration levels untill interrupt occurs.
-    setPWM(0, 30);
-
-}
