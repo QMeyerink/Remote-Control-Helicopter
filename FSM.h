@@ -25,10 +25,10 @@
 #include "utils/ustdlib.h"
 
 enum yaw_state {
+    state_zero,
     state_one,
     state_two,
-    state_three,
-    state_four
+    state_three
 
 };
 

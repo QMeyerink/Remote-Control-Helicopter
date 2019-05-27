@@ -5,10 +5,6 @@
 // Authors: Tyler Noah
 //          Quinlan Meyerink
 //
-//uartDemo.c
-// Author:  P.J. Bones  UCECE
-// Last modified:   15.5.2018
-//
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -27,6 +23,7 @@
 #include "OrbitOLED/OrbitOLEDInterface.h"
 #include "buttons4.h"
 #include "FSM.h"
+#include "PID_Controller.h"
 
 //********************************************************
 // Constants
@@ -43,18 +40,9 @@
 #define UART_USB_GPIO_PINS      UART_USB_GPIO_PIN_RX | UART_USB_GPIO_PIN_TX
 
 //********************************************************
-// Prototypes
-//********************************************************
-void UARTSend (char *pucBuffer);
-
-//********************************************************
 // Global variables
 //********************************************************
 char statusStr[MAX_STR_LEN + 1];
-
-//**********************************************************************
-// Transmit a string via UART0
-//**********************************************************************
 
 void
 initialiseUSB_UART (void)
@@ -92,8 +80,13 @@ UARTSend (char *pucBuffer)
 }
 
 void
-UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_t altitude_goal, int32_t altitude, int32_t altitude_control, int32_t yaw_control)
+UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_t altitude_goal, int32_t altitude)
 {
+    int32_t altitude_control, yaw_control;
+
+    altitude_control = get_altitude_control();
+    yaw_control = get_yaw_control();
+
     char statusStr[MAX_STR_LEN + 1];
     usprintf (statusStr, "State: %2d \n\n", fly_state);
     UARTSend (statusStr);

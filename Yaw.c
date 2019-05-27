@@ -14,6 +14,12 @@
 #include "FSM.h"
 #include "PWM_Module.h"
 
+#define MAIN 1
+#define TAIL 0
+
+#define CALIBRATION_MAIN_DUTY 30
+#define CALIBRATION_TAIL_DUTY 30
+
 
 void yawIntHandler (void)
 {
@@ -38,7 +44,9 @@ void yawIntHandler (void)
 void yawRefIntHandler(void)
 {
     IntMasterDisable();
-    GPIOIntClear(GPIO_PORTC_BASE, GPIO_INT_PIN_4); //Clear this interrupts flag
+
+    //Clear and disable this interrupt
+    GPIOIntClear(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
     GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
 
     distance = 0; //Set FSM yaw to 0 at ref
@@ -51,13 +59,15 @@ void
 initYaw (void)
 {
     bool pin_state_A, pin_state_B;
+
+    //Enable each of the data ports used for Yaw
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 
-
-        GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_0|GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD); // This code doesnt make sense but program fails without it.
-        GPIOPadConfigSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD); // This code doesnt make sense but program fails without it.
+        //Configure the port pad to be weak pull up pins
+        GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_0|GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+        GPIOPadConfigSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
         GPIOPadConfigSet(GPIO_PORTA_BASE, GPIO_PIN_7, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
 
         // Set data direction register as output
@@ -69,25 +79,31 @@ initYaw (void)
         GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandler);
         GPIOIntRegister(GPIO_PORTC_BASE, yawRefIntHandler);
 
+        //Set what change in signal will cause an interrupt
         GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1, GPIO_BOTH_EDGES);
         GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_INT_PIN_4, GPIO_RISING_EDGE);
 
         //Enable this interrupt
         GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1);
 
-
+        //Check the current state of each pin
+        //by checking agiasnt itself we can form a boolean value for each pin
         pin_state_A = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_0) == GPIO_INT_PIN_0);
         pin_state_B = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1) == GPIO_INT_PIN_1);
 
+        //Set the inital state of the yaw FSm on start up
         init_state(pin_state_A, pin_state_B);
 }
 
 void
 yaw_calibration (void) {
 
-    GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4); //enable interrupt for yaw calibration
-    setPWM(1, 15);       //set the motors to calbration levels untill interrupt occurs.
-    setPWM(0, 30);
+    //Enable interrupt for yaw calibration
+    GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+
+    //Set rotors to set values for calibration routine
+    setPWM(MAIN, CALIBRATION_MAIN_DUTY);
+    setPWM(TAIL, CALIBRATION_TAIL_DUTY);
 
 }
 

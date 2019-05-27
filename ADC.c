@@ -13,8 +13,11 @@
 #include "circBufT.h"
 #include "driverlib/debug.h"
 
-extern circBuf_t g_inBuffer;
-extern uint32_t g_ulSampCnt;
+circBuf_t g_inBuffer;
+uint32_t g_ulSampCnt;
+uint32_t g_kernal_counter;
+
+#define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
 
 
 void SysTickIntHandler(void)
@@ -24,6 +27,7 @@ void SysTickIntHandler(void)
     //
     ADCProcessorTrigger(ADC0_BASE, 3);
     g_ulSampCnt++;
+    g_kernal_counter++;
 }
 
 
@@ -83,5 +87,24 @@ void initADC (void)
     //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(ADC0_BASE, 3);
+}
+
+
+void initClock (void)
+{
+    // Set the clock rate to 20 MHz
+    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
+                   SYSCTL_XTAL_16MHZ);
+    //
+    // Set up the period for the SysTick timer.  The SysTick timer period is
+    // set as a function of the system clock.
+    SysTickPeriodSet(SysCtlClockGet() / SAMPLE_RATE_HZ);
+    //
+    // Register the interrupt handler
+    SysTickIntRegister(SysTickIntHandler);
+    //
+    // Enable interrupt and device
+    SysTickIntEnable();
+    SysTickEnable();
 }
 

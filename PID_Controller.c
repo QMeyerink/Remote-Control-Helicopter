@@ -14,20 +14,21 @@
 #include "utils/ustdlib.h"
 #include "PWM_Module.h"
 
-//Three gains for controllers
-//Coments next to gains show previous commit's gains
-//Main Rotor
-#define M_Kp 0.3 //0.4
-#define M_Ki 0.0007 // 0.009
-#define M_Kd 0.3 //0.8
-//Tail Rotor
-#define T_Kp 1.0 // 1
-#define T_Ki 0.0011 // 0.1
-#define T_Kd 2.5 // 0.8
+
+
+//Main Rotor gains
+#define M_Kp 0.3
+#define M_Ki 0.0007
+#define M_Kd 0.3
+
+//Tail Rotor gains
+#define T_Kp 1.0
+#define T_Ki 0.0011
+#define T_Kd 2.5
 
 #define TAIL 0
 #define MAIN 1
-#define MAXIMUM_DUTY_CYCLE 98
+#define MAXIMUM_DUTY_CYCLE 70
 #define MINIMUM_DUTY_CYCLE 2
 
 
@@ -35,23 +36,26 @@
 static int32_t altitude_pervious_error = 0.0;
 static int32_t yaw_pervious_error = 0.0;
 
-extern int32_t altitude_control = 0;
-extern int32_t yaw_control = 0;
-
 static int32_t error_inter_main = 0.0;
 static int32_t error_inter_tail = 0.0;
+
+static int32_t altitude_control = 0;
+static int32_t yaw_control = 0;
+
+
+
 
 void PWM_rate_set()
 {
     //make sure PWM signal doesnt go out of bounds
 
-    if(altitude_control > 70) {
-        altitude_control = 70;
+    if(altitude_control > MAXIMUM_DUTY_CYCLE) {
+        altitude_control = MAXIMUM_DUTY_CYCLE;
     } else if(altitude_control < MINIMUM_DUTY_CYCLE) {
         altitude_control = MINIMUM_DUTY_CYCLE;
     }
-    if(yaw_control > 60) {
-        yaw_control = 60;
+    if(yaw_control > MAXIMUM_DUTY_CYCLE) {
+        yaw_control = MAXIMUM_DUTY_CYCLE;
     } else if(yaw_control < MINIMUM_DUTY_CYCLE) {
         yaw_control = MINIMUM_DUTY_CYCLE;
     }
@@ -86,6 +90,15 @@ void pid_update(int32_t altitude, int32_t altitude_setpoint, int32_t yaw, int32_
     altitude_pervious_error = altitude_error;
     yaw_pervious_error = yaw_error;
 
+    //Set the PWM for each rotor
     PWM_rate_set();
+}
+
+int32_t get_altitude_control() {
+    return altitude_control;
+}
+
+int32_t get_yaw_control() {
+    return yaw_control;
 }
 

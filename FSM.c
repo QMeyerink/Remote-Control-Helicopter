@@ -20,27 +20,9 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 #include "PWM_Module.h"
+#include "Yaw.h"
+#include "FSM.h"
 
-
-enum yaw_state {
-    state_zero = 0,
-    state_one,
-    state_two,
-    state_three
-
-};
-
-enum flying_state {
-    landed = 0,
-    calibration,
-    flying,
-    landing,
-
-};
-
-
-typedef enum yaw_state yaw_state_t;
-typedef enum flying_state flying_state_t;
 
 #define NUM_OF_PINS 448
 yaw_state_t previous_state;

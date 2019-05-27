@@ -57,12 +57,6 @@
 #define CALIBRATION_YAW_PWM_DUTY 80
 #define CALIBRATION_ALTITUDE_PWM_DUTY 5
 
-
-/*********************************************************
- * initialisePWM
- * M0PWM7 (J4-05, PC5) is used for the main rotor motor
- *********************************************************/
-
 void setPWM (uint8_t rotor_select, uint32_t ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
@@ -82,9 +76,12 @@ void setPWM (uint8_t rotor_select, uint32_t ui32Duty)
 
 void initialisePWM (void)
 {
+
+    //Enable the output pins for the main rotor PWM
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_PWM);
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_GPIO);
 
+    //Enable the output pins for the tail rotor PWM
     SysCtlPeripheralEnable(PWM_TAIL_PERIPH_PWM);
     SysCtlPeripheralEnable(PWM_TAIL_PERIPH_GPIO);
 
@@ -93,6 +90,7 @@ void initialisePWM (void)
 
     GPIOPinConfigure(PWM_TAIL_GPIO_CONFIG);
     GPIOPinTypePWM(PWM_TAIL_GPIO_BASE, PWM_TAIL_GPIO_PIN);
+
 
     PWMGenConfigure(PWM_MAIN_BASE, PWM_MAIN_GEN,
                     PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);

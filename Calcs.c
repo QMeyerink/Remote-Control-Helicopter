@@ -13,16 +13,13 @@
 #include "circBufT.h"
 #include "math.h"
 
-
 #define BUF_SIZE 25
 #define SAMPLE_RATE_HZ 100
 #define PINS_TO_DEG_RATIO 0.8036
 #define ANALOG_RANGE 1092
 
-
-extern int32_t altitude_base;
 extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
-int32_t distance;
+int32_t distance;                   // Number of state changes from reference
 
 
 int32_t CalcAv(void)
@@ -46,12 +43,13 @@ int32_t CalcAv(void)
     return result;
 }
 
-int32_t CalcPerc(int32_t Average)
+int32_t CalcPerc(int32_t average, int32_t altitude_base)
 {
 
     //Find the rounded percentage value of altitude
     //relative to inital altitude or set altitude
-    int32_t percent = floor(((Average - altitude_base) * -100) / ANALOG_RANGE);
+    int32_t percent = floor(((average - altitude_base) * -100) / ANALOG_RANGE);
+
     return percent;
 }
 

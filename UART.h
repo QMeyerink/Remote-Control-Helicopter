@@ -59,13 +59,12 @@ void
 UARTSend (char *pucBuffer);
 
 void
-UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_t altitude_goal, int32_t altitude, int32_t altitude_control, int32_t yaw_control);
+UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_t altitude_goal, int32_t altitude);
 
 //********************************************************
 // Global variables
 //********************************************************
 char statusStr[MAX_STR_LEN + 1];
-volatile uint8_t slowTick = false;
 
 
 

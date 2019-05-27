@@ -30,7 +30,7 @@ int32_t distance;
 int32_t CalcAv(void);
 
 
-int32_t CalcPerc(int32_t Average);
+int32_t CalcPerc(int32_t average, int32_t altitude_base);
 
 int32_t tick_to_deg(void);
 

@@ -12,28 +12,29 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
+#include "PWM_Module.h"
 
-//Three gains for controllers (These are just random values i put in, they have no actual reasoning behind them)
-#define M_Kp 0.6 //0.4
-#define M_Ki 0.0007 // 0.009
-#define M_Kd 0.4 //0.8
-//Tail Rotor
-#define T_Kp 1 // 1
-#define T_Ki 0.02 // 0.1
-#define T_Kd 2.5 // 0.8
+//Main Rotor gains
+#define M_Kp 0.3
+#define M_Ki 0.0007
+#define M_Kd 0.3
+
+//Tail Rotor gains
+#define T_Kp 1.0
+#define T_Ki 0.0011
+#define T_Kd 2.5
 
 #define TAIL 0
 #define MAIN 1
-#define MAXIMUM_DUTY_CYCLE 98
+#define MAXIMUM_DUTY_CYCLE 70
 #define MINIMUM_DUTY_CYCLE 2
-
 
 
 static int32_t altitude_pervious_error = 0.0;
 static int32_t yaw_pervious_error = 0.0;
 
-extern int32_t altitude_control;
-extern int32_t yaw_control;
+int32_t altitude_control;
+int32_t yaw_control;
 
 static int32_t error_inter_main = 0.0;
 static int32_t error_inter_tail = 0.0;
@@ -42,4 +43,7 @@ void PWM_rate_set();
 
 void pid_update(int32_t altitude, int32_t altitude_setpoint, int32_t yaw, int32_t yaw_setpoint, double delta_t);
 
+int32_t get_altitude_control();
+
+int32_t get_yaw_control();
 

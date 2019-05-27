@@ -13,12 +13,15 @@
 #include "circBufT.h"
 #include "driverlib/debug.h"
 
-extern circBuf_t g_inBuffer;
-extern uint32_t g_ulSampCnt;
+circBuf_t g_inBuffer;
+uint32_t g_ulSampCnt;
 
+#define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
 
 void SysTickIntHandler(void);
 
 void ADCIntHandler(void);
 
 void initADC (void);
+
+void initClock (void);
