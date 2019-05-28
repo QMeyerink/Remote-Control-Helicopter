@@ -27,7 +27,7 @@
 #define NUM_OF_PINS 448
 yaw_state_t previous_state;
 extern flying_state_t fly_state;
-extern int32_t distance;
+extern int32_t yaw_ticks;
 
 
 void direction_calculator(bool sensorA)
@@ -39,56 +39,56 @@ void direction_calculator(bool sensorA)
 //one sensor changes value (A)
 {
     //If a full rotation has been completed set back to distance count back to 0
-    if((distance == NUM_OF_PINS)||(distance == -NUM_OF_PINS)) {
-        distance = 0;
+    if((yaw_ticks == NUM_OF_PINS)||(yaw_ticks == -NUM_OF_PINS)) {
+        yaw_ticks = 0;
     }
 
     switch(previous_state) {
         case state_zero : // A=0, B=0
             if(sensorA) {
                 previous_state = state_three;
-                distance -= 1;
+                yaw_ticks -= 1;
                 break;
 
             } else {
                 previous_state = state_one;
-                distance += 1;
+                yaw_ticks += 1;
                 break;
             }
 
         case state_one : // A=0, B=1
             if(sensorA) {
                 previous_state = state_two;
-                distance += 1;
+                yaw_ticks += 1;
                 break;
 
             } else {
                 previous_state = state_zero;
-                distance -= 1;
+                yaw_ticks -= 1;
                 break;
             }
 
         case state_two : // A=1, B=1
             if(sensorA) {
                 previous_state = state_three;
-                distance += 1;
+                yaw_ticks += 1;
                 break;
 
             } else {
                 previous_state = state_one;
-                distance -= 1;
+                yaw_ticks -= 1;
                 break;
             }
 
         case state_three : // A=1, B=0
             if(sensorA) {
                 previous_state = state_two;
-                distance -= 1;
+                yaw_ticks -= 1;
                 break;
 
             } else {
                 previous_state = state_zero;
-                distance += 1;
+                yaw_ticks += 1;
                 break;
             }
     }
@@ -100,7 +100,7 @@ void init_state(bool sensorA, bool sensorB)
 //Selects start up state from the sensor input
 {
     yaw_state_t return_state;
-    distance = 0;
+    yaw_ticks = 0;
 
     //States are gray-coded to allow simple transitions
     if(sensorA) {

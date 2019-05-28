@@ -19,7 +19,7 @@
 #define ANALOG_RANGE 1092
 
 extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
-int32_t distance;                   // Number of state changes from reference
+int32_t yaw_ticks;                   // Number of state changes from reference
 
 
 int32_t CalcAv(void)
@@ -43,19 +43,20 @@ int32_t CalcAv(void)
     return result;
 }
 
+
 int32_t CalcPerc(int32_t average, int32_t altitude_base)
 {
-
     //Find the rounded percentage value of altitude
-    //relative to inital altitude or set altitude
-    int32_t percent = floor(((average - altitude_base) * -100) / ANALOG_RANGE);
+    //relative to initial altitude or set altitude
 
+    int32_t percent = floor(((average - altitude_base) * -100) / ANALOG_RANGE);
     return percent;
 }
+
 
 int32_t tick_to_deg(void)
 {
     //Convert The amount of pins sensor has passed to degrees
     //relative to initial position.
-    return(distance*PINS_TO_DEG_RATIO);
+    return(yaw_ticks*PINS_TO_DEG_RATIO);
 }

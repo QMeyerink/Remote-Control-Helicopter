@@ -41,15 +41,18 @@ void yawIntHandler (void)
     IntMasterEnable();
 }
 
+
 void yawRefIntHandler(void)
 {
+    //ISR for having found the Yaw reference during calibration stage of flight
+
     IntMasterDisable();
 
     //Clear and disable this interrupt
     GPIOIntClear(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
     GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
 
-    distance = 0; //Set FSM yaw to 0 at ref
+    yaw_ticks = 0; //Set FSM yaw to 0 at ref
     fly_state = flying; //Move from calibration to flying state.
 
     IntMasterEnable();
@@ -58,6 +61,10 @@ void yawRefIntHandler(void)
 void
 initYaw (void)
 {
+    //Enables and configures the three pins used for yaw
+    //monitoring on the helicopter sensors A and B as well
+    //as the reference sensor
+
     bool pin_state_A, pin_state_B;
 
     //Enable each of the data ports used for Yaw
@@ -75,7 +82,7 @@ initYaw (void)
         GPIODirModeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_DIR_MODE_IN);
         GPIODirModeSet(GPIO_PORTA_BASE, GPIO_PIN_7, GPIO_DIR_MODE_IN);
 
-        // Set the int handler for this pin
+        // Set the interrupt handler for this pin
         GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandler);
         GPIOIntRegister(GPIO_PORTC_BASE, yawRefIntHandler);
 
@@ -87,16 +94,18 @@ initYaw (void)
         GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1);
 
         //Check the current state of each pin
-        //by checking agiasnt itself we can form a boolean value for each pin
+        //by checking against itself we can form a boolean value for each pin
         pin_state_A = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_0) == GPIO_INT_PIN_0);
         pin_state_B = (GPIOPinRead(GPIO_PORTB_BASE, GPIO_INT_PIN_1) == GPIO_INT_PIN_1);
 
-        //Set the inital state of the yaw FSm on start up
+        //Set the initial state of the yaw FSm on start up
         init_state(pin_state_A, pin_state_B);
 }
 
 void
 yaw_calibration (void) {
+    //Enables the interrupt for the yaw reference sensor on pin PC4
+    //Also sets helicopter motors to a gentle rotation to find reference
 
     //Enable interrupt for yaw calibration
     GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);

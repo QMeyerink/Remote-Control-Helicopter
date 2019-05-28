@@ -46,7 +46,7 @@ typedef enum flying_state flying_state_t;
 
 yaw_state_t previous_state;
 flying_state_t fly_state;
-extern int32_t distance;
+extern int32_t yaw_ticks;
 
 
 void direction_calculator(bool sensorA);
