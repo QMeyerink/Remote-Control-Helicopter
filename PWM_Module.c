@@ -59,6 +59,8 @@
 
 void setPWM (uint8_t rotor_select, uint32_t ui32Duty)
 {
+    //Sets the power to either of the helicopter's two rotors
+
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =
         SysCtlClockGet() / PWM_DIVIDER / PWM_RATE_HZ;

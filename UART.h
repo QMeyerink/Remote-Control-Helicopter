@@ -52,14 +52,11 @@
 // Prototypes
 //********************************************************
 
-void
-initialiseUSB_UART (void);
+void initialiseUSB_UART (void);
 
-void
-UARTSend (char *pucBuffer);
+void UARTSend (char *pucBuffer);
 
-void
-UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_t altitude_goal, int32_t altitude);
+void UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_t altitude_goal, int32_t altitude);
 
 //********************************************************
 // Global variables

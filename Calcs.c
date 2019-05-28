@@ -4,7 +4,8 @@
  *
  *  Created on: 4/04/2019
  *  For ENCE 361 Helicopter Project Milestone 2
- *      Author: Quinlan Meyerink, Tyler Noah
+ *  Performs conversion calculations for altitude and yaw values
+ *      Authors: Quinlan Meyerink, Tyler Noah
  */
 
 #include <stdint.h>

@@ -35,11 +35,12 @@ static bool but_flag[NUM_BUTS];
 static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
 
 // *******************************************************
+
+void initButtons (void)
+{
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants in the buttons2.h header file.
-void
-initButtons (void)
-{
+
 	int i;
 
 	// UP button (active HIGH)
@@ -92,7 +93,9 @@ initButtons (void)
 	}
 }
 
-// *******************************************************
+
+void updateButtons (void)
+{
 // updateButtons: Function designed to be called regularly. It polls all
 // buttons once and updates variables associated with the buttons if
 // necessary.  It is efficient enough to be part of an ISR, e.g. from
@@ -101,9 +104,7 @@ initButtons (void)
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have
 // read the pin in the opposite condition, before the state changes and
 // a flag is set.  Set NUM_BUT_POLLS according to the polling rate.
-void
-updateButtons (void)
-{
+
 	bool but_value[NUM_BUTS];
 	int i;
 	
@@ -131,13 +132,13 @@ updateButtons (void)
 	}
 }
 
-// *******************************************************
+
+uint8_t checkButton (uint8_t butName)
+{
 // checkButton: Function returns the new button logical state if the button
 // logical state (PUSHED or RELEASED) has changed since the last call,
 // otherwise returns NO_CHANGE.
-uint8_t
-checkButton (uint8_t butName)
-{
+
 	if (but_flag[butName])
 	{
 		but_flag[butName] = false;

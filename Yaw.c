@@ -58,8 +58,7 @@ void yawRefIntHandler(void)
     IntMasterEnable();
 }
 
-void
-initYaw (void)
+void initYaw (void)
 {
     //Enables and configures the three pins used for yaw
     //monitoring on the helicopter sensors A and B as well
@@ -102,8 +101,7 @@ initYaw (void)
         init_state(pin_state_A, pin_state_B);
 }
 
-void
-yaw_calibration (void) {
+void yaw_calibration (void) {
     //Enables the interrupt for the yaw reference sensor on pin PC4
     //Also sets helicopter motors to a gentle rotation to find reference
 

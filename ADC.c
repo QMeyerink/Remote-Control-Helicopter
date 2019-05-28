@@ -1,3 +1,14 @@
+/*
+ * ADC.c
+ *
+ *
+ *  Created on: 4/04/2019
+ *  For ENCE 361 Helicopter Project Milestone 2
+ *  Contains ADC interrupt handler for altitude sensor and
+ *   SysTick interrupt handler for scheduling
+ *      Authors: Quinlan Meyerink, Tyler Noah
+ */
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"
@@ -33,6 +44,8 @@ void SysTickIntHandler(void)
 
 void ADCIntHandler(void)
 {
+    //Gets value from sensor and places in circular buffer
+
     //Disable interrupts during this interrupt
     IntMasterDisable();
 

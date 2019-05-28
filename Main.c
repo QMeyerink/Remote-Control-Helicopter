@@ -55,8 +55,7 @@
 extern flying_state_t fly_state;
 extern uint32_t g_kernal_counter;
 
-void
-initSystem(void)
+void initSystem(void)
 {
     initClock ();
     initADC();

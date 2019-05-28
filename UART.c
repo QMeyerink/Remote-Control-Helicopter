@@ -44,8 +44,7 @@
 //********************************************************
 char statusStr[MAX_STR_LEN + 1];
 
-void
-initialiseUSB_UART (void)
+void initialiseUSB_UART (void)
 {
     //
     // Enable GPIO port A which is used for UART0 pins.
@@ -66,8 +65,7 @@ initialiseUSB_UART (void)
     UARTEnable(UART_USB_BASE);
 }
 
-void
-UARTSend (char *pucBuffer)
+void UARTSend (char *pucBuffer)
 {
     // Loop while there are more characters to send.
     while(*pucBuffer)
@@ -79,8 +77,7 @@ UARTSend (char *pucBuffer)
     }
 }
 
-void
-UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_t altitude_goal, int32_t altitude)
+void UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_t altitude_goal, int32_t altitude)
 {
     int32_t altitude_control, yaw_control;
 
