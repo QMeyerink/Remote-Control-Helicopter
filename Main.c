@@ -120,6 +120,29 @@ int32_t update_yaw_goal(int32_t yaw_goal, flying_state_t fly_state)
     return yaw_goal;
 }
 
+void displayUpdate (int32_t altitude_goal, int32_t yaw_goal)
+{
+    // Displays on the OLED, the altitude data (raw or percentage scaled) and the yaw distance
+    // depending on which page has been selected
+
+    char line1[17]; // Display fits 16 characters wide.
+    char line2[17];
+    char line3[17];
+    char line4[17];
+
+    usnprintf (line1, sizeof(line1), "Flying state:          " );
+    usnprintf (line2, sizeof(line2), "       %2d         ", fly_state); //Checks goals to test
+    usnprintf (line3, sizeof(line1), "Altitude Goal:     ");
+    usnprintf (line4, sizeof(line2), "      %3d%%        ", altitude_goal); //Checks goals to test
+
+    //Draw specified strings.
+    OLEDStringDraw (line1, 0, 0);
+    OLEDStringDraw (line2, 0, 1);
+    OLEDStringDraw (line3, 0, 2);
+    OLEDStringDraw (line4, 0, 3);
+
+}
+
 
 void main(void)
 {
@@ -128,12 +151,12 @@ void main(void)
 
 
     //Declare all local variables
-    int32_t altitude, percentage, yaw, altitude_goal, yaw_goal, altitude_base, kernal_counter_tmp;
+    int32_t altitude, percentage, yaw, altitude_goal, yaw_goal, altitude_base;
+    int32_t OLED_time, serial_time, PID_time;
 
     //Set initial values for local variables
     altitude_goal = 0;
     yaw_goal = 0;
-    kernal_counter_tmp = 0;
     fly_state = landed;
 
     //Full clock delay allows sensor to fill buffer
@@ -141,6 +164,9 @@ void main(void)
     altitude_base = CalcAv();
 
     g_kernal_counter = 0;
+    OLED_time = 0;
+    serial_time = 0;
+    PID_time = 0;
 
     while(1)
     {
@@ -149,7 +175,6 @@ void main(void)
         while(fly_state != landed) {
 
             //Set the current counter to a value so it doesn't change during loop
-            kernal_counter_tmp = g_kernal_counter;
             update_state();
             updateButtons();
 
@@ -157,11 +182,14 @@ void main(void)
             if(checkButton(RESET) == PUSHED) {
                 SysCtlReset();
             }
-            //Updating at 100 Hz thus counter must be larger than 1
-            //if (kernal_counter_tmp >= 1) {
 
-                yaw_goal = update_yaw_goal(yaw_goal, fly_state);
-                altitude_goal = update_altitude_goal(altitude_goal, fly_state);
+            yaw_goal = update_yaw_goal(yaw_goal, fly_state);
+            altitude_goal = update_altitude_goal(altitude_goal, fly_state);
+
+            //If time between this check and last function is more than 0.01s then run (100Hz);
+            if((g_kernal_counter - PID_time) >= 1 ){
+
+                PID_time = g_kernal_counter;
 
                 altitude = CalcAv(); //Calculates the average ADC altitude value
                 percentage = CalcPerc(altitude, altitude_base);  //Scales analog average to percentage
@@ -170,20 +198,21 @@ void main(void)
                 if(fly_state != calibration) {
                     pid_update(percentage, altitude_goal, yaw, yaw_goal, 1000 ); //Update control PWM signals for rotors.
                 }
-            //}
+            }
 
-            //display should be updated at 50 Hz thus counter must be larger than 2
-            //if(kernal_counter_tmp >= 2) {
-                //update_display
-            //}
+            //If time between this check and last function is more than 0.02s then run (50Hz)
+            if((g_kernal_counter - OLED_time) >= 2) {
+                OLED_time = g_kernal_counter;
+                displayUpdate (altitude_goal, yaw_goal);
+            }
 
-            //Updating UART at 10 Hz so counter must be larger than 10
-            //if(kernal_counter_tmp >= 2) {
+            //If time between this check and last function is more than 0.1s then run (10Hz)
+            if((g_kernal_counter - serial_time) >= 10) {
+                serial_time = g_kernal_counter;
                 UART_update(fly_state, yaw_goal, yaw, altitude_goal, percentage);
-            //}
+            }
 
-            //set the counter to the difference between current count and count occuring during loop
-            g_kernal_counter -= kernal_counter_tmp;
+
 
             if(fly_state == landing) {
                 if(percentage == ATREF && yaw == ATREF) {
