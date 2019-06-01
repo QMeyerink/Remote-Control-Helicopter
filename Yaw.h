@@ -18,11 +18,11 @@
 #include "PWM_Module.h"
 
 
-void yawIntHandler (void);
+void yaw_int_handler (void);
 
-void yawRefIntHandler(void);
+void yaw_ref_int_handler(void);
 
-void initYaw (void);
+void init_yaw (void);
 
 void yaw_calibration (void);
 

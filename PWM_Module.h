@@ -44,8 +44,8 @@
 #define PWM_MAIN_GPIO_CONFIG GPIO_PC5_M0PWM7
 #define PWM_MAIN_GPIO_PIN    GPIO_PIN_5
 
-void setPWM(uint8_t rotor_select, uint32_t ui32Duty);
+void set_PWM(uint8_t rotor_select, uint32_t ui32Duty);
 
-void initialisePWM(void);
+void init_PWM(void);
 
 #endif /*PWM_Module_h*/

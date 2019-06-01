@@ -23,7 +23,7 @@ extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample 
 int32_t yaw_ticks;                   // Number of state changes from reference
 
 
-int32_t CalcAv(void)
+int32_t calc_av(void)
 {
     // Calculates the Average ADC value by reading
     // a circular buffer that is filled in interrupts
@@ -45,7 +45,7 @@ int32_t CalcAv(void)
 }
 
 
-int32_t CalcPerc(int32_t average, int32_t altitude_base)
+int32_t calc_perc(int32_t average, int32_t altitude_base)
 {
     //Find the rounded percentage value of altitude
     //relative to initial altitude or set altitude

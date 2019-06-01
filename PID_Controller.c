@@ -61,8 +61,8 @@ void PWM_rate_set()
     }
 
 
-    setPWM(MAIN, altitude_control);
-    setPWM(TAIL, yaw_control);
+    set_PWM(MAIN, altitude_control);
+    set_PWM(TAIL, yaw_control);
 }
 
 void pid_update(int32_t altitude, int32_t altitude_setpoint, int32_t yaw, int32_t yaw_setpoint, double delta_t)

@@ -43,25 +43,33 @@
 
 #define YAW_STEP 15
 #define ALTITUDE_STEP 10
+
 #define ALTITUDE_MAX 100
 #define ALTITUDE_MIN 0
 #define YAW_MIN -180
 #define YAW_MAX 180
+
+#define DELTA_T 1000
+
 #define MAIN 1
 #define TAIL 0
 #define OFF 0
 #define ATREF 0
 
+#define PID_KERNAL_TICKS 1
+#define OLED_KERNAL_TICKS 2
+#define SERIAL_KERNAL_TICKS 20
+
 extern flying_state_t fly_state;
 extern uint32_t g_kernal_counter;
 
-void initSystem(void)
+void init_system(void)
 {
-    initClock ();
-    initADC();
+    init_clock ();
+    init_ADC();
     initButtons();
-    initYaw();
-    initialisePWM();
+    init_yaw();
+    init_PWM();
     initialiseUSB_UART();
     initCircBuf(&g_inBuffer, BUF_SIZE);
     OLEDInitialise ();
@@ -120,7 +128,7 @@ int32_t update_yaw_goal(int32_t yaw_goal, flying_state_t fly_state)
     return yaw_goal;
 }
 
-void displayUpdate (int32_t altitude_goal, int32_t yaw_goal)
+void display_update (int32_t altitude_goal, int32_t yaw_goal)
 {
     // Displays on the OLED, the altitude data (raw or percentage scaled) and the yaw distance
     // depending on which page has been selected
@@ -147,7 +155,7 @@ void displayUpdate (int32_t altitude_goal, int32_t yaw_goal)
 void main(void)
 {
     //Run all initiate functions.
-    initSystem();
+    init_system();
 
 
     //Declare all local variables
@@ -161,7 +169,7 @@ void main(void)
 
     //Full clock delay allows sensor to fill buffer
     SysCtlDelay (SysCtlClockGet ());
-    altitude_base = CalcAv();
+    altitude_base = calc_av();
 
     g_kernal_counter = 0;
     OLED_time = 0;
@@ -187,27 +195,27 @@ void main(void)
             altitude_goal = update_altitude_goal(altitude_goal, fly_state);
 
             //If time between this check and last function is more than 0.01s then run (100Hz);
-            if((g_kernal_counter - PID_time) >= 1 ){
+            if((g_kernal_counter - PID_time) >= PID_KERNAL_TICKS ){
 
                 PID_time = g_kernal_counter;
 
-                altitude = CalcAv(); //Calculates the average ADC altitude value
-                percentage = CalcPerc(altitude, altitude_base);  //Scales analog average to percentage
+                altitude = calc_av(); //Calculates the average ADC altitude value
+                percentage = calc_perc(altitude, altitude_base);  //Scales analog average to percentage
                 yaw = tick_to_deg();   // Converts tick count to yaw degrees
 
                 if(fly_state != calibration) {
-                    pid_update(percentage, altitude_goal, yaw, yaw_goal, 1000 ); //Update control PWM signals for rotors.
+                    pid_update(percentage, altitude_goal, yaw, yaw_goal, DELTA_T ); //Update control PWM signals for rotors.
                 }
             }
 
             //If time between this check and last function is more than 0.02s then run (50Hz)
-            if((g_kernal_counter - OLED_time) >= 2) {
+            if((g_kernal_counter - OLED_time) >= OLED_KERNAL_TICKS) {
                 OLED_time = g_kernal_counter;
-                displayUpdate (altitude_goal, yaw_goal);
+                display_update (altitude_goal, yaw_goal);
             }
 
-            //If time between this check and last function is more than 0.1s then run (10Hz)
-            if((g_kernal_counter - serial_time) >= 10) {
+            //If time between this check and last function is more than 0.05s then run (20Hz)
+            if((g_kernal_counter - serial_time) >= SERIAL_KERNAL_TICKS) {
                 serial_time = g_kernal_counter;
                 UART_update(fly_state, yaw_goal, yaw, altitude_goal, percentage);
             }
@@ -216,8 +224,8 @@ void main(void)
 
             if(fly_state == landing) {
                 if(percentage == ATREF && yaw == ATREF) {
-                    setPWM(TAIL,OFF);
-                    setPWM(MAIN,OFF);
+                    set_PWM(TAIL,OFF);
+                    set_PWM(MAIN,OFF);
                     fly_state = landed;
                 }
             }

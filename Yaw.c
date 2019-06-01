@@ -21,7 +21,7 @@
 #define CALIBRATION_TAIL_DUTY 30
 
 
-void yawIntHandler (void)
+void yaw_int_handler (void)
 {
     //Disable interrupts during interrupt
     IntMasterDisable();
@@ -42,7 +42,7 @@ void yawIntHandler (void)
 }
 
 
-void yawRefIntHandler(void)
+void yaw_ref_int_handler(void)
 {
     //ISR for having found the Yaw reference during calibration stage of flight
 
@@ -58,7 +58,7 @@ void yawRefIntHandler(void)
     IntMasterEnable();
 }
 
-void initYaw (void)
+void init_yaw (void)
 {
     //Enables and configures the three pins used for yaw
     //monitoring on the helicopter sensors A and B as well
@@ -82,8 +82,8 @@ void initYaw (void)
         GPIODirModeSet(GPIO_PORTA_BASE, GPIO_PIN_7, GPIO_DIR_MODE_IN);
 
         // Set the interrupt handler for this pin
-        GPIOIntRegister(GPIO_PORTB_BASE, yawIntHandler);
-        GPIOIntRegister(GPIO_PORTC_BASE, yawRefIntHandler);
+        GPIOIntRegister(GPIO_PORTB_BASE, yaw_int_handler);
+        GPIOIntRegister(GPIO_PORTC_BASE, yaw_ref_int_handler);
 
         //Set what change in signal will cause an interrupt
         GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_INT_PIN_0|GPIO_INT_PIN_1, GPIO_BOTH_EDGES);
@@ -109,8 +109,8 @@ void yaw_calibration (void) {
     GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
 
     //Set rotors to set values for calibration routine
-    setPWM(MAIN, CALIBRATION_MAIN_DUTY);
-    setPWM(TAIL, CALIBRATION_TAIL_DUTY);
+    set_PWM(MAIN, CALIBRATION_MAIN_DUTY);
+    set_PWM(TAIL, CALIBRATION_TAIL_DUTY);
 
 }
 

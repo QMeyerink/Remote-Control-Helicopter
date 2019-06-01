@@ -18,10 +18,10 @@ uint32_t g_ulSampCnt;
 
 #define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
 
-void SysTickIntHandler(void);
+void sys_tick_int_handler(void);
 
-void ADCIntHandler(void);
+void ADC_int_handler(void);
 
-void initADC (void);
+void init_ADC (void);
 
-void initClock (void);
+void init_clock (void);

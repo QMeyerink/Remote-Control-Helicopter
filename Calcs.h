@@ -27,10 +27,9 @@ extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample 
 int32_t yaw_ticks;
 
 
-int32_t CalcAv(void);
+int32_t calc_av(void);
 
-
-int32_t CalcPerc(int32_t average, int32_t altitude_base);
+int32_t calc_perc(int32_t average, int32_t altitude_base);
 
 int32_t tick_to_deg(void);
 

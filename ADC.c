@@ -31,7 +31,7 @@ uint32_t g_kernal_counter;
 #define SAMPLE_RATE_HZ 100      // Rate at which altitude is sampled
 
 
-void SysTickIntHandler(void)
+void sys_tick_int_handler(void)
 {
     //
     // Initiate a conversion
@@ -42,7 +42,7 @@ void SysTickIntHandler(void)
 }
 
 
-void ADCIntHandler(void)
+void ADC_int_handler(void)
 {
     //Gets value from sensor and places in circular buffer
 
@@ -67,7 +67,7 @@ void ADCIntHandler(void)
 
 
 
-void initADC (void)
+void init_ADC (void)
 {
     // The ADC0 peripheral must be enabled for configuration and use.
     SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
@@ -95,7 +95,7 @@ void initADC (void)
 
     //
     // Register the interrupt handler
-    ADCIntRegister (ADC0_BASE, 3, ADCIntHandler);
+    ADCIntRegister (ADC0_BASE, 3, ADC_int_handler);
 
     //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
@@ -103,7 +103,7 @@ void initADC (void)
 }
 
 
-void initClock (void)
+void init_clock (void)
 {
     // Set the clock rate to 20 MHz
     SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
@@ -114,7 +114,7 @@ void initClock (void)
     SysTickPeriodSet(SysCtlClockGet() / SAMPLE_RATE_HZ);
     //
     // Register the interrupt handler
-    SysTickIntRegister(SysTickIntHandler);
+    SysTickIntRegister(sys_tick_int_handler);
     //
     // Enable interrupt and device
     SysTickIntEnable();

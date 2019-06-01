@@ -22,13 +22,12 @@
  * Constants
  **********************************************************/
 // Systick configuration
+
 #define SYSTICK_RATE_HZ    100
 
 // PWM configuration
-#define PWM_RATE_HZ        50
-#define PWM_START_DUTY     3
-#define PWM_DIVIDER_CODE   SYSCTL_PWMDIV_4
-#define PWM_DIVIDER        4
+#define PWM_RATE_HZ        200
+#define PWM_START_DUTY     2
 
 //  PWM Hardware Details M0PWM7 (gen 3)
 //  ---Main Rotor PWM: PC5, J4-05
@@ -57,13 +56,13 @@
 #define CALIBRATION_YAW_PWM_DUTY 80
 #define CALIBRATION_ALTITUDE_PWM_DUTY 5
 
-void setPWM (uint8_t rotor_select, uint32_t ui32Duty)
+void set_PWM (uint8_t rotor_select, uint32_t ui32Duty)
 {
     //Sets the power to either of the helicopter's two rotors
 
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =
-        SysCtlClockGet() / PWM_DIVIDER / PWM_RATE_HZ;
+        SysCtlClockGet() / PWM_RATE_HZ;
 
     if(rotor_select == 1) {
         PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
@@ -76,7 +75,7 @@ void setPWM (uint8_t rotor_select, uint32_t ui32Duty)
     }
 }
 
-void initialisePWM (void)
+void init_PWM (void)
 {
 
     //Enable the output pins for the main rotor PWM
@@ -100,8 +99,8 @@ void initialisePWM (void)
                     PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 
     // Set the initial PWM parameters
-    setPWM (1, PWM_START_DUTY);
-    setPWM (0, PWM_START_DUTY);
+    set_PWM (1, PWM_START_DUTY);
+    set_PWM (0, PWM_START_DUTY);
 
     PWMGenEnable(PWM_MAIN_BASE, PWM_MAIN_GEN);
     PWMGenEnable(PWM_TAIL_BASE, PWM_TAIL_GEN);

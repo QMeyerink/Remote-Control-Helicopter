@@ -65,7 +65,7 @@ void initialiseUSB_UART (void)
     UARTEnable(UART_USB_BASE);
 }
 
-void UARTSend (char *pucBuffer)
+void UART_send (char *pucBuffer)
 {
     // Loop while there are more characters to send.
     while(*pucBuffer)
@@ -86,16 +86,16 @@ void UART_update(flying_state_t fly_state, int32_t yaw_goal, int32_t yaw, int32_
 
     char statusStr[MAX_STR_LEN + 1];
     usprintf (statusStr, "State: %2d \n\n", fly_state);
-    UARTSend (statusStr);
+    UART_send (statusStr);
     usprintf (statusStr, "Yaw: %2d [%2d]\n\n", yaw, yaw_goal);
-    UARTSend (statusStr);
+    UART_send (statusStr);
     usprintf (statusStr, "Alt: %2d [%2d]\n\n", altitude, altitude_goal);
-    UARTSend (statusStr);
+    UART_send (statusStr);
     usprintf (statusStr, "PWM Main %%: %2d\n\n", altitude_control);
-    UARTSend (statusStr);
+    UART_send (statusStr);
     usprintf (statusStr, "PWM Tail %%: %2d\n\n", yaw_control);
-    UARTSend (statusStr);
+    UART_send (statusStr);
     usprintf (statusStr, "------------\n\n");
-    UARTSend (statusStr);
+    UART_send (statusStr);
 
 }
