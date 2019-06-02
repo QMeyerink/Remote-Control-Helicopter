@@ -7,7 +7,7 @@
  *  Along with the two interrupt handlers for calibration and yaw
  *  Also has the yaw calibration routine
  *
- *  For ENCE 361 Helicopter Project Milestone 2
+ *  For ENCE 361 Helicopter Project
  *      Author: Quinlan Meyerink, Tyler Noah
  */
 

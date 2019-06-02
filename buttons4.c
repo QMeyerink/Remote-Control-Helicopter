@@ -3,6 +3,7 @@
 // buttons4.c
 //
 // Support for a set of FOUR specific buttons on the Tiva/Orbit.
+//Initialises, updates and checks buttons
 // ENCE361 sample code.
 // The buttons are:  UP and DOWN (on the Orbit daughterboard) plus
 // LEFT and RIGHT on the Tiva.

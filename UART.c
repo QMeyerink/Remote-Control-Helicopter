@@ -1,6 +1,8 @@
 //********************************************************
 //
 // UART Module for Helicopter Project abstracted from uartDemo.c - Example code for ENCE361
+//Sends packets of information on the helicopters altitude, yaw, set points, flying state and
+// PWM duty cycles
 //UART.c
 // Authors: Tyler Noah
 //          Quinlan Meyerink

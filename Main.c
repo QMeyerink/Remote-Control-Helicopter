@@ -1,6 +1,6 @@
 //*****************************************************************************
 //
-// Main.c - Main program for helicopter milestone 2 project
+// Main.c - Main program for helicopter project
 //
 //Takes analog sensor value from helicopter rig (PE4) and
 // yaw sensor values (A = PB0, B = PB1) and displays to OLED
