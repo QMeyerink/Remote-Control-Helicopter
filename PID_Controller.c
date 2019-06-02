@@ -1,3 +1,15 @@
+/*
+ * PID_Controller.c
+ *
+ *  Created on: 20/04/2019
+ *  Contains a PID controller with static gains
+ *  A function to keep PWM duty cycle values within bounds
+ *  Two functions to access the current main and rotor duty cycles.
+ *
+ *  For ENCE 361 Helicopter Project
+ *      Author: Quinlan Meyerink, Tyler Noah
+ */
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"

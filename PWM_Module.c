@@ -1,3 +1,16 @@
+/*
+ * PID_Controller.c
+ *
+ *  Created on: 15/05/2019
+ *
+ *  Contains the PWM initialise function
+ *  Contains a function to set the current frequency and duty for PWM
+ *
+ *  For ENCE 361 Helicopter Project
+ *      Author: Quinlan Meyerink, Tyler Noah
+ */
+
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -11,12 +24,6 @@
 #include "driverlib/interrupt.h"
 #include "buttons4.h"
 #include "FSM.h"
-
-/**********************************************************
- * Generates a single PWM signal on Tiva board pin J4-05 =
- * PC5 (M0PWM7).  This is the same PWM output as the
- * helicopter main rotor.
- **********************************************************/
 
 /**********************************************************
  * Constants

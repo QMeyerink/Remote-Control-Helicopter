@@ -7,7 +7,7 @@
 // the percentage altitude and yaw angle
 //
 // Authors:  Quinlan Meyerink & Tyler Noah
-// Last modified:   18.4.2019
+// Last modified:   2.6.2019
 //
 
 #include <stdint.h>

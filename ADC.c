@@ -6,6 +6,7 @@
  *  For ENCE 361 Helicopter Project Milestone 2
  *  Contains ADC interrupt handler for altitude sensor and
  *   SysTick interrupt handler for scheduling
+ *
  *      Authors: Quinlan Meyerink, Tyler Noah
  */
 

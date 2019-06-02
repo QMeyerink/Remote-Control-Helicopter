@@ -3,7 +3,8 @@
  *
  *
  *  Created on: 4/04/2019
- *  For ENCE 361 Helicopter Project Milestone 2
+ *  For ENCE 361 Helicopter Project
+ *  Performs conversion calculations for altitude and yaw values
  *      Author: Quinlan Meyerink, Tyler Noah
  */
 

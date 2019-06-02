@@ -1,7 +1,11 @@
 /*
- * Interrupts.h
+ * PID_Controller.h
  *
- *  Created on: 4/04/2019
+ *  Created on: 15/05/2019
+ *
+ *  Contains the PWM initialise function
+ *  Contains a function to set the current frequency and duty for PWM
+ *
  *  For ENCE 361 Helicopter Project Milestone 2
  *      Author: Quinlan Meyerink, Tyler Noah
  */

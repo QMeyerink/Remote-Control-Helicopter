@@ -2,6 +2,8 @@
  * FSM.h
  *
  *  Created on: 10/04/2019
+ *  Contains an initiate state function to find first state
+ *  Contains an FSM state increment function, and a function to increment the yaw ticks
  *  For ENCE 361 Helicopter Project Milestone 2
  *      Author: Quinlan Meyerink, Tyler Noah
  */

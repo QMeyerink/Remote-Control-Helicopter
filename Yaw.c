@@ -1,3 +1,17 @@
+/*
+ * Yaw.c
+ *
+ *  Created on: 15/05/2019
+ *
+ *  Contains the initialise Yaw function
+ *  Along with the two interrupt handlers for calibration and yaw
+ *  Also has the yaw calibration routine
+ *
+ *  For ENCE 361 Helicopter Project Milestone 2
+ *      Author: Quinlan Meyerink, Tyler Noah
+ */
+
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "stdlib.h"
